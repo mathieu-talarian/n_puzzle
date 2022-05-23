@@ -1,12 +1,9 @@
 package solver
 
 import (
-	"N_Puzzle/bst"
 	"N_Puzzle/npuzzle"
 	"container/list"
 	"fmt"
-
-	"github.com/theodesp/go-heaps/rank_pairing"
 )
 
 type List struct {
@@ -18,11 +15,9 @@ var costFunction CostFunction
 
 type Astar struct {
 	npuzzle.Puzzle
-	Goal       npuzzle.Puzzle
-	OpenList   *rank_paring.RPHeap
-	ClosedList *bst.Node
-	Turns      uint
-	MaxState   uint
+	Goal npuzzle.Puzzle
+
+	MaxState uint
 	HeuristicFunction
 }
 
@@ -50,10 +45,7 @@ func NewAstar(p npuzzle.Puzzle, h, c uint) *Astar {
 	return &Astar{
 		Puzzle:            p,
 		Goal:              npuzzle.Goal(p.Size),
-		OpenList:          rank_paring.New().Init(),
-		ClosedList:        nil,
 		HeuristicFunction: FindHeuristic(h),
-		Turns:             0,
 		MaxState:          0,
 	}
 }

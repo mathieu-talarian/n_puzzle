@@ -2,7 +2,6 @@ package solver
 
 import (
 	"N_Puzzle/actions"
-	"N_Puzzle/bst"
 	"N_Puzzle/npuzzle"
 	"fmt"
 	"log"
@@ -20,7 +19,7 @@ func Start(p npuzzle.Puzzle, h uint, c uint) {
 		log.Fatal(err)
 	} else {
 		n.PrintResult()
-		fmt.Println("Number of turns:", a.Turns)
+		fmt.Println("Number of turns:", Turns.val)
 		fmt.Println("Max state:", a.MaxState)
 	}
 }
@@ -38,37 +37,24 @@ func (a *Astar) Run(size int /*FCost SortList */) (q *Node, err error) {
 	return runN(a)
 }
 
-func run(a *Astar /* , FCost */) (q *Node, err error) {
-	if err = a.RootNode(No); err != nil {
-		return
-	}
-	return
-}
-
 func runN(a *Astar /* , FCost */) (q *Node, err error) {
 	if err = a.RootNode(No); err != nil {
 		return
 	}
-	for a.OpenList.Size() > 0 {
-		node := a.OpenList.DeleteMin()
 
-		uuid := node.(*Node).State.CreateUuid()
-
-		if node.(*Node).H == 0 {
-			return node.(*Node), nil
+	for true {
+		for i := 0; i < int(NUM_JOBS); i++ {
+			Turns.Inc()
+			Jobs <- a
 		}
-		a.Turns++
-		node.(*Node).Execute(a)
-		num := a.OpenList.Size()
-		if num > int(a.MaxState) {
-			a.MaxState = uint(num)
-		}
-		if a.ClosedList == nil {
-			a.ClosedList = bst.NewNode(bst.String(uuid))
-		} else {
-			a.ClosedList.Insert(bst.String(uuid))
+		for i := 0; i < int(NUM_JOBS); i++ {
+			res := <-Results
+			if res != nil {
+				return res, nil
+			}
 		}
 	}
+
 	return
 }
 
@@ -82,11 +68,12 @@ func (a *Astar) RootNode(action int) (err error) {
 	if err != nil {
 		return
 	}
-	a.OpenList.Insert(NewNode(
-		actions.None,
-		0,
-		uint(h),
-		nil,
-		a.Puzzle))
+	Open_List.Insert(
+		NewNode(
+			actions.None,
+			0,
+			uint(h),
+			nil,
+			a.Puzzle))
 	return
 }

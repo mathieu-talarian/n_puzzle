@@ -22,18 +22,13 @@ func FindHeuristic(h uint) HeuristicFunction {
 	switch h {
 	case Manhattan:
 		return ManhattanHeuristic()
-		break
 	case Linear:
 		return LinearHeuristic()
-		break
 	case Misplaced:
 		return MisplacedHeuristic()
-		break
 	default:
 		return ManhattanHeuristic()
-		break
 	}
-	return ManhattanHeuristic()
 }
 
 type CostFunction func(a, b *Node) int

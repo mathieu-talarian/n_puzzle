@@ -8,7 +8,6 @@ import (
 	"log"
 
 	heap "github.com/theodesp/go-heaps"
-	"github.com/theodesp/go-heaps/rank_pairing"
 )
 
 type Node struct {
@@ -74,8 +73,8 @@ func move(action actions.Action, state *npuzzle.Puzzle, astar *Astar, n *Node) c
 
 func add(newNode *Node, a *Astar) {
 	if newNode != nil {
-		if !newNode.AlreadyClosed(a.ClosedList) {
-			OpenListLowerCost(a.OpenList, newNode)
+		if !Closed_List.AlreadyClosed(newNode) {
+			Open_List.Insert(newNode)
 		}
 	}
 }
@@ -86,10 +85,6 @@ func (n *Node) Execute(a *Astar) {
 	add(bot, a)
 	add(left, a)
 	add(right, a)
-}
-
-func OpenListLowerCost(o *rank_paring.RPHeap, newNode *Node) {
-	o.Insert(newNode)
 }
 
 func (n *Node) PrintNode() {
