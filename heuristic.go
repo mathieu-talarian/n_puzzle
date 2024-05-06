@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -75,9 +74,6 @@ func ManhattanHeuristic() HeuristicFunction {
 	fmt.Println("Manhattan")
 	return HeuristicFunction(func(board *Puzzle, final Puzzle) (ret int, err error) {
 		ret = 0
-		if len(board.Tiles) != len(final.Tiles) {
-			return 0, errors.New("les tableaux de tiles ne sont pas de la meme taille")
-		}
 		for i := range board.Tiles {
 			current := board.Tiles[i]
 			final := final.Tiles[i]
@@ -110,9 +106,7 @@ func LinearHeuristic() HeuristicFunction {
 	fmt.Println("Manhattan with linear conflicts")
 	return HeuristicFunction(func(board *Puzzle, final Puzzle) (ret int, err error) {
 		ret = 0
-		if len(board.Tiles) != len(final.Tiles) {
-			return 0, errors.New("les tableaux de tiles ne sont pas de la meme taille")
-		}
+
 		for i := range board.Tiles {
 			current := board.Tiles[i]
 			final := final.Tiles[i]

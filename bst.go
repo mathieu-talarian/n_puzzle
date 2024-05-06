@@ -14,23 +14,10 @@ type BstString string
 
 // Compare func compare BstString to Item of new BST
 func (a BstString) Compare(b BstString) int {
-	s1 := a
-	s2 := b
-	min := len(s2)
-	if len(s1) < len(s2) {
-		min = len(s1)
-	}
-	diff := 0
-	for i := 0; i < min && diff == 0; i++ {
-		diff = int(s1[i]) - int(s2[i])
-	}
-	if diff == 0 {
-		diff = len(s1) - len(s2)
-	}
-	if diff < 0 {
+	if a < b {
 		return -1
 	}
-	if diff > 0 {
+	if a > b {
 		return 1
 	}
 	return 0
@@ -44,7 +31,7 @@ func NewBst(uuid BstString) *Bst {
 // Insert new `Item` on BST
 func (n *Bst) Insert(data BstString) error {
 	if n == nil {
-		return fmt.Errorf("Cannot insert Value into a Nil tree")
+		return fmt.Errorf("cannot insert Value into a Nil tree")
 	}
 
 	switch {

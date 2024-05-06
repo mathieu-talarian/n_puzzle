@@ -16,51 +16,48 @@ func (p *Puzzle) Move(action int) {
 	switch action {
 	case Top:
 		p.Board.MoveTop(p.Zero.I, p.Size)
-		break
 	case Bot:
 		p.Board.MoveBot(p.Zero.I, p.Size)
-		break
+
 	case Left:
 		p.Board.MoveLeft(p.Zero.I)
-		break
+
 	case Right:
 		p.Board.MoveRight(p.Zero.I)
-		break
 	}
 
 	p.zeroIndex()
 	p.TabTiles()
 }
 
-func (b Board) MoveTop(i, size int) {
-	tmp := b[i-size]
-	b[i-size] = 0
-	b[i] = tmp
+func (b *Board) MoveTop(i, size int) {
+	tmp := (*b)[i-size]
+	(*b)[i-size] = 0
+	(*b)[i] = tmp
 }
 
-func (b Board) MoveBot(i, size int) {
-	tmp := b[i+size]
-	b[i+size] = 0
-	b[i] = tmp
+func (b *Board) MoveBot(i, size int) {
+	tmp := (*b)[i+size]
+	(*b)[i+size] = 0
+	(*b)[i] = tmp
 }
 
-func (b Board) MoveLeft(i int) {
-	tmp := b[i-1]
-	b[i-1] = 0
-	b[i] = tmp
+func (b *Board) MoveLeft(i int) {
+	tmp := (*b)[i-1]
+	(*b)[i-1] = 0
+	(*b)[i] = tmp
 }
 
-// Moveright moves
-func (b Board) MoveRight(i int) {
-	tmp := b[i+1]
-	b[i+1] = 0
-	b[i] = tmp
+func (b *Board) MoveRight(i int) {
+	tmp := (*b)[i+1]
+	(*b)[i+1] = 0
+	(*b)[i] = tmp
 }
 
 func (p *Puzzle) makeGoals() {
 	cur, ix := 1, 1
 	x, y, iy := 0, 0, 0
-	for true {
+	for {
 		(p.Board)[x+y*p.Size] = cur
 		if cur == 0 {
 			break
@@ -92,7 +89,6 @@ func initPuzzle(size int) *Puzzle {
 	}
 	return u
 }
-
 func (p *Puzzle) swapEmpty() (err error) {
 	if err = p.zeroIndex(); err != nil {
 		log.Fatal(err)
@@ -110,13 +106,10 @@ func (p *Puzzle) swapEmpty() (err error) {
 	if (p.Zero.I / p.Size) < (p.Size - 1) {
 		poss = append(poss, p.Zero.I+p.Size)
 	}
-	n, err := rand.Int(rand.Reader, big.NewInt(int64(len(poss))))
-	if err != nil {
-		log.Fatal(err)
-	}
+	n, _ := rand.Int(rand.Reader, big.NewInt(int64(len(poss))))
 	swi := poss[n.Int64()]
 	p.Board[p.Zero.I], p.Board[swi] = p.Board[swi], 0
-	return
+	return nil
 }
 
 func (p *Puzzle) makePuzzle(solvable bool, iterations uint) (err error) {
@@ -144,7 +137,7 @@ func (p *Puzzle) zeroIndex() (err error) {
 			return
 		}
 	}
-	return errors.New("No tile '0'")
+	return errors.New("no tile '0'")
 }
 
 // Generate function
@@ -263,13 +256,8 @@ func (p *Puzzle) CreateUUID() BstString {
 // Copy deep copy board to board
 func (b Board) Copy(i int) Board {
 	nb := make([]int, i*i)
-	if len(b) == len(nb) {
-		for i, y := range b {
-			nb[i] = y
-		}
-		return nb
-	}
-	return Board{}
+	copy(nb, b)
+	return nb
 }
 
 // Copy deep copy puzzle to puzzle
@@ -285,24 +273,20 @@ func (p *Puzzle) Copy() *Puzzle {
 // Copy deep copy puzzle tiles to tiles
 func (t Tiles) Copy(i int) Tiles {
 	np := make([]Tile, i*i)
-	if len(t) == len(np) {
-		for i, y := range t {
-			np[i] = y
-		}
-		return np
-	}
-	return Tiles{}
+	copy(np, t)
+	return np
 }
 
 // PrintPuzzle prints the puzzle on standard input
 func (p *Puzzle) PrintPuzzle() {
 	u := p.Board
+	padding := len(strconv.Itoa(p.Size*p.Size)) + 1
 	for y := 0; y < p.Size; y++ {
 		for x := 0; x < p.Size; x++ {
 			if u[x+y*p.Size] == 0 {
-				color.New(color.FgRed).Printf("|%*d| ", len(strconv.Itoa(p.Size*p.Size))+1, u[x+y*p.Size])
+				color.New(color.FgRed).Printf("|%*d| ", padding, u[x+y*p.Size])
 			} else {
-				fmt.Printf("|%*d| ", len(strconv.Itoa(p.Size*p.Size))+1, u[x+y*p.Size])
+				fmt.Printf("|%*d| ", padding, u[x+y*p.Size])
 			}
 		}
 		fmt.Printf("\n")

@@ -30,7 +30,7 @@ type Datas struct {
 func File(av []string) (puzzle *Puzzle, err error) {
 	l := list.New()
 	if len(av) > 1 {
-		return nil, errors.New("Too much arguments")
+		return nil, errors.New("too much arguments")
 	}
 	file, err := os.Open(av[0])
 	if err != nil {
@@ -38,7 +38,8 @@ func File(av []string) (puzzle *Puzzle, err error) {
 	}
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		newList, err := ScanToList(scanner.Text())
+		l.Init()
+		newList, err := ScanToList(scanner.Text(), l)
 		if err == nil && newList != nil && newList.Len() != 0 {
 			l.PushBack(newList)
 		}
@@ -48,16 +49,15 @@ func File(av []string) (puzzle *Puzzle, err error) {
 		return nil, err
 	}
 	if len(d.Board) == 0 {
-		return nil, fmt.Errorf("Issue with input")
+		return nil, fmt.Errorf("issue with input")
 	}
 	return PuzzleFromDatas(d.Size, d.Board)
 }
 
-func ScanToList(text string) (*list.List, error) {
+func ScanToList(text string, l *list.List) (*list.List, error) {
 	tab := strings.Fields(text)
-	l := list.New()
 	for i := range tab {
-		if rune(tab[i][0]) == rune('#') {
+		if strings.HasPrefix(tab[i], "#") {
 			return l, nil
 		}
 		l.PushBack(tab[i])
@@ -67,7 +67,7 @@ func ScanToList(text string) (*list.List, error) {
 
 func (d *Datas) ListCheckSize(l *list.List) error {
 	if l.Len() != 1 {
-		return errors.New("Issue with puzzle size")
+		return errors.New("issue with puzzle size")
 	} else if s, err := strconv.Atoi(l.Front().Value.(string)); s <= 2 && err == nil {
 		return errors.New(fmt.Sprintln("Size too short or negative : ", s))
 	} else if err != nil {
@@ -93,7 +93,7 @@ func DataFromList(l *list.List) (d *Datas, err error) {
 			}
 		} else {
 			if l.Len()-1 > d.Size {
-				return nil, errors.New("Too much lanes for board")
+				return nil, errors.New("too much lanes for board")
 			}
 			if e.Value.(*list.List).Len() != d.Size {
 				return nil, errors.New(fmt.Sprintln("Issue with size for lane ", i+1))
@@ -117,23 +117,15 @@ func DataFromList(l *list.List) (d *Datas, err error) {
 		i++
 	}
 	if cpt < d.Size*d.Size {
-		return nil, fmt.Errorf("Issue with puzzle, missing datas")
+		return nil, fmt.Errorf("issue with puzzle, missing datas")
 	}
 	return
 }
 
-var NumberErr = [2]func(i int) error{
-	func(i int) error {
-		return errors.New(fmt.Sprintln("Number too low or too high :", i))
-	},
-	func(i int) error {
-		return errors.New(fmt.Sprintln("Number already exists in Board (twice or more):", i))
-	},
-}
-
 func CheckNumberIntoBoard(n, size int, board []int) error {
 	if n < 0 || n >= size*size {
-		return NumberErr[0](n)
+		return errors.New(fmt.Sprintln("Number too low or too high :", n))
+
 	}
 	cpt := 0
 	for _, b := range board {
@@ -142,7 +134,7 @@ func CheckNumberIntoBoard(n, size int, board []int) error {
 		}
 	}
 	if cpt > 0 {
-		return NumberErr[1](n)
+		return errors.New(fmt.Sprintln("Number already exists in Board (twice or more):", n))
 	}
 	return nil
 }

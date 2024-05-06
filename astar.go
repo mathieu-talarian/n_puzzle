@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	rank_paring "github.com/theodesp/go-heaps/rank_pairing"
 )
 
@@ -14,14 +12,6 @@ type Astar struct {
 	Turns      uint
 	MaxState   uint
 	HeuristicFunction
-}
-
-func (a *Astar) Done() bool {
-	return false
-}
-
-func (a *Astar) S() {
-	fmt.Println("A* =>", a)
 }
 
 func NewAstar(p *Puzzle, h, c uint) *Astar {
@@ -36,14 +26,10 @@ func NewAstar(p *Puzzle, h, c uint) *Astar {
 	}
 }
 
-/*
-RootNode func
-*/
-func (a *Astar) RootNode(action int) (err error) {
-	var h int
-	h, err = a.HeuristicFunction(a.Puzzle, a.Goal)
+func (a *Astar) RootNode(action int) error {
+	h, err := a.HeuristicFunction(a.Puzzle, a.Goal)
 	if err != nil {
-		return
+		return err
 	}
 	a.OpenList.Insert(NewNode(
 		&None.Name,
@@ -51,7 +37,7 @@ func (a *Astar) RootNode(action int) (err error) {
 		uint(h),
 		nil,
 		a.Puzzle))
-	return
+	return nil
 }
 
 func (a *Astar) CheckSolvability() bool {

@@ -52,8 +52,6 @@ func runN(a *Astar /* , FCost */) (q *Node, err error) {
 		} else {
 			a.ClosedList.Insert(uuid)
 		}
-		state = nil
-		node = nil
 	}
 	return
 }
@@ -71,22 +69,16 @@ func move(action Action, state *Puzzle, astar *Astar, n *Node, results chan<- *N
 	} else {
 		results <- nil
 	}
-	tile = nil
 }
 
 func add(newNode *Node, a *Astar, uuid BstString) {
 	if newNode != nil {
 		if !newNode.AlreadyClosed(a.ClosedList, uuid) {
 			a.OpenList.Insert(newNode)
-		} else {
-			newNode = nil
 		}
 	}
 }
 
 func worker(id <-chan int, puzzle *Puzzle, a *Astar, n *Node, results chan<- *Node) {
 	move(L[<-id], puzzle, a, n, results)
-	puzzle = nil
-	a = nil
-	n = nil
 }

@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   node.go                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: mmoullec <mmoullec@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/01/15 17:01:14 by mmoullec          #+#    #+#             */
-/*   Updated: 2019/01/15 17:01:15 by mmoullec         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 package main
 
 import (
@@ -17,10 +5,6 @@ import (
 
 	heap "github.com/theodesp/go-heaps"
 )
-
-/**
-Node
-*/
 
 type Node struct {
 	Action *string
@@ -52,19 +36,18 @@ func (n *Node) AlreadyClosed(closedList *Bst, uuid BstString) bool {
 func (n Node) Execute(a *Astar, uuid BstString, state *Puzzle) {
 	id := make(chan int, len(L))
 	nodes := make(chan *Node, len(L))
+	defer close(id)
+	defer close(nodes)
 	for range L {
 		go worker(id, state.Copy(), a, &n, nodes)
 	}
 	for _, v := range L {
 		id <- v.Value
 	}
-	close(id)
 	for range L {
 		add(<-nodes, a, uuid)
 	}
-	close(nodes)
-	id = nil
-	nodes = nil
+
 }
 
 func (n *Node) PrintNode() {
