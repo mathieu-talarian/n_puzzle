@@ -42,11 +42,7 @@ func runN(a *AStarSolver) (q *SearchNode, err error) {
 		if num > int(a.MaxStatesReached) {
 			a.MaxStatesReached = uint(num)
 		}
-		if a.ClosedNodesTree == nil {
-			a.ClosedNodesTree = NewBst(uuid)
-		} else {
-			a.ClosedNodesTree.Insert(uuid)
-		}
+		a.ClosedNodesMap[uuid] = struct{}{}
 	}
 	return
 }

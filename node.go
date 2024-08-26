@@ -28,8 +28,8 @@ func (node *SearchNode) Compare(otherNode heap.Item) int {
 	return costFunction(node, otherNode.(*SearchNode))
 }
 
-func (node *SearchNode) IsAlreadyClosed(closedNodesTree *BinarySearchTree, nodeUUID TreeString) bool {
-	isFound := closedNodesTree.Find(TreeString(nodeUUID))
+func (node *SearchNode) IsAlreadyClosed(closedNodesMap map[TreeString]struct{}, nodeUUID TreeString) bool {
+	_, isFound := closedNodesMap[TreeString(nodeUUID)]
 	return isFound
 }
 
@@ -38,11 +38,10 @@ func (node SearchNode) ExecuteSolver(solver *AStarSolver, nodeUUID TreeString, p
 	nodeChannel := make(chan *SearchNode, len(ActionsList))
 	defer close(actionChannel)
 	defer close(nodeChannel)
-	for range ActionsList {
-		go worker(actionChannel, puzzleState.Copy(), solver, &node, nodeChannel)
-	}
 	for _, action := range ActionsList {
-		actionChannel <- action.Value
+		go func(action Action) {
+			move(action, puzzleState.Copy(), solver, &node, nodeChannel)
+		}(action)
 	}
 	for range ActionsList {
 		add(<-nodeChannel, solver, nodeUUID)

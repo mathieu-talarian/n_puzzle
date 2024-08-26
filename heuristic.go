@@ -76,8 +76,10 @@ func ManhattanHeuristic() HeuristicFunction {
 		for i := range board.Tiles {
 			currentTile := board.Tiles[i]
 			finalTile := final.Tiles[i]
-			result += AbsoluteValue(currentTile.X - finalTile.X)
-			result += AbsoluteValue(currentTile.Y - finalTile.Y)
+			if currentTile != finalTile {
+				result += AbsoluteValue(currentTile.X - finalTile.X)
+				result += AbsoluteValue(currentTile.Y - finalTile.Y)
+			}
 		}
 		return
 	}
