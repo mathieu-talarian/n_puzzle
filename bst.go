@@ -11,11 +11,11 @@ type BinarySearchTree struct {
 type TreeString string
 
 // Compare func compare BstString to Item of new BST
-func (a TreeString) Compare(b TreeString) int {
-	if a < b {
+func (treeStringA TreeString) Compare(treeStringB TreeString) int {
+	if treeStringA < treeStringB {
 		return -1
 	}
-	if a > b {
+	if treeStringA > treeStringB {
 		return 1
 	}
 	return 0
@@ -27,8 +27,8 @@ func NewBst(uuid TreeString) *BinarySearchTree {
 }
 
 // Insert new `Item` on BST
-func (n *BinarySearchTree) Insert(data TreeString) error {
-	if n == nil {
+func (node *BinarySearchTree) Insert(newData TreeString) error {
+	if node == nil {
 		return fmt.Errorf("cannot insert Value into a Nil tree")
 	}
 
@@ -40,28 +40,28 @@ func (n *BinarySearchTree) Insert(data TreeString) error {
 			n.Left = &BinarySearchTree{Uuid: &data}
 			return nil
 		}
-		return n.Left.Insert(data)
-	case n.Uuid.Compare(data) < 0:
-		if n.Right == nil {
-			n.Right = &BinarySearchTree{Uuid: &data}
+		return node.Left.Insert(newData)
+	case node.Uuid.Compare(newData) < 0:
+		if node.Right == nil {
+			node.Right = &BinarySearchTree{Uuid: &newData}
 			return nil
 		}
-		return n.Right.Insert(data)
+		return node.Right.Insert(newData)
 	}
 	return nil
 }
 
 // Find `Item` on BST returns nil, false if can't find item
-func (n *BinarySearchTree) Find(data TreeString) bool {
-	if n == nil {
+func (node *BinarySearchTree) Find(newData TreeString) bool {
+	if node == nil {
 		return false
 	}
 	switch {
-	case n.Uuid.Compare(data) == 0:
+	case node.Uuid.Compare(newData) == 0:
 		return true
-	case n.Uuid.Compare(data) > 0:
-		return n.Left.Find(data)
+	case node.Uuid.Compare(newData) > 0:
+		return node.Left.Find(newData)
 	default:
-		return n.Right.Find(data)
+		return node.Right.Find(newData)
 	}
 }
