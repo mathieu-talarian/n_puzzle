@@ -6,60 +6,59 @@ import (
 	heap "github.com/theodesp/go-heaps"
 )
 
-type Node struct {
-	Action *string
-	G      *uint
-	H      *uint
-	Parent *Node
-	State  string
+type SearchNode struct {
+	MoveAction     *string
+	PathCost       *uint
+	HeuristicCost  *uint
+	ParentNode     *SearchNode
+	EncodedState   string
 }
 
-func NewNode(action *string, g uint, h uint, parent *Node, state *Puzzle) *Node {
-	return &Node{
-		Action: action,
-		G:      &g,
-		H:      &h,
-		Parent: parent,
-		State:  state.compute(),
+func NewSearchNode(moveAction *string, pathCost uint, heuristicCost uint, parentNode *SearchNode, puzzleState *Puzzle) *SearchNode {
+	return &SearchNode{
+		MoveAction:    moveAction,
+		PathCost:      &pathCost,
+		HeuristicCost: &heuristicCost,
+		ParentNode:    parentNode,
+		EncodedState:  puzzleState.compute(),
 	}
 }
 
-func (n *Node) Compare(than heap.Item) int {
-	return costFunction(n, than.(*Node))
+func (node *SearchNode) Compare(otherNode heap.Item) int {
+	return costFunction(node, otherNode.(*SearchNode))
 }
 
-func (n *Node) AlreadyClosed(closedList *BinarySearchTree, uuid TreeString) bool {
-	ok := closedList.Find(TreeString(uuid))
-	return ok
+func (node *SearchNode) IsAlreadyClosed(closedNodesTree *BinarySearchTree, nodeUUID TreeString) bool {
+	isFound := closedNodesTree.Find(TreeString(nodeUUID))
+	return isFound
 }
 
-func (n Node) Execute(a *AStarSolver, uuid TreeString, state *Puzzle) {
-	id := make(chan int, len(ActionsList))
-	nodes := make(chan *Node, len(ActionsList))
-	defer close(id)
-	defer close(nodes)
+func (node SearchNode) ExecuteSolver(solver *AStarSolver, nodeUUID TreeString, puzzleState *Puzzle) {
+	actionChannel := make(chan int, len(ActionsList))
+	nodeChannel := make(chan *SearchNode, len(ActionsList))
+	defer close(actionChannel)
+	defer close(nodeChannel)
 	for range ActionsList {
-		go worker(id, state.Copy(), a, &n, nodes)
+		go worker(actionChannel, puzzleState.Copy(), solver, &node, nodeChannel)
 	}
-	for _, v := range ActionsList {
-		id <- v.Value
+	for _, action := range ActionsList {
+		actionChannel <- action.Value
 	}
 	for range ActionsList {
-		add(<-nodes, a, uuid)
+		addNodeToSolver(<-nodeChannel, solver, nodeUUID)
 	}
-
 }
 
-func (n *Node) PrintNode() {
-	fmt.Println("Move :", *n.Action)
-	decompute(n.State).PrintPuzzle()
-	fmt.Println("Cost:", *n.H, "| Depth:", *n.G)
+func (node *SearchNode) PrintNodeDetails() {
+	fmt.Println("Move Action:", *node.MoveAction)
+	decompute(node.EncodedState).PrintPuzzle()
+	fmt.Println("Heuristic Cost:", *node.HeuristicCost, "| Path Cost:", *node.PathCost)
 	fmt.Println()
 }
 
-func (n *Node) PrintResult() {
-	if n != nil {
-		n.Parent.PrintResult()
-		n.PrintNode()
+func (node *SearchNode) PrintSolutionPath() {
+	if node != nil {
+		node.ParentNode.PrintSolutionPath()
+		node.PrintNodeDetails()
 	}
 }
