@@ -33,11 +33,11 @@ func (node *BinarySearchTree) Insert(newData TreeString) error {
 	}
 
 	switch {
-	case n.Uuid.Compare(data) == 0:
+	case node.Uuid.Compare(newData) == 0:
 		return nil
-	case n.Uuid.Compare(data) > 0:
-		if n.Left == nil {
-			n.Left = &BinarySearchTree{Uuid: &data}
+	case node.Uuid.Compare(newData) > 0:
+		if node.Left == nil {
+			node.Left = &BinarySearchTree{Uuid: &newData}
 			return nil
 		}
 		return node.Left.Insert(newData)
