@@ -25,7 +25,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if len(f.Args) == 0 {
+	if len(flags.Args) == 0 {
 		puzzle, err = Generate()
 		if err != nil {
 			log.Fatal(err)
@@ -64,7 +64,7 @@ func computeSolv(f *bool, solv, unsolv bool) (err error) {
 		*f = false
 		return nil
 	} else {
-		r, err = rand.Int(rand.Reader, big.NewInt(int64(len(t))))
+		r, err = rand.Int(rand.Reader, big.NewInt(int64(len(solvabilityOptions))))
 		if err != nil {
 			return err
 		}

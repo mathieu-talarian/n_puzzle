@@ -10,7 +10,7 @@ var costFunction CostFunction
 // Start function init astar
 func Start(puzzle *Puzzle, heuristic uint, cost uint) {
 	astar := NewAstar(puzzle, heuristic, cost)
-	costFunction = FindCostFunction(c)
+	costFunction = FindCostFunction(heuristic)
 	if !astar.CheckSolvability() {
 		log.Fatal("This puzzle is unsolvable")
 	}
