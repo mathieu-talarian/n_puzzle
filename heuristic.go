@@ -13,9 +13,9 @@ const (
 	Pattern
 )
 
-func FindHeuristic(h uint) HeuristicFunction {
+func FindHeuristic(heuristicType uint) HeuristicFunction {
 	fmt.Print("Chosen Heuristic function : ")
-	switch h {
+	switch heuristicType {
 	case Manhattan:
 		return ManhattanHeuristic()
 	case Linear:
@@ -35,9 +35,9 @@ const (
 	uniform
 )
 
-func FindCostFunction(c uint) CostFunction {
+func FindCostFunction(costType uint) CostFunction {
 	fmt.Print("Chosen Cost function : ")
-	switch c - 1 {
+	switch costType - 1 {
 	case greedy:
 		return greedyCost()
 	case aStar:
@@ -50,35 +50,35 @@ func FindCostFunction(c uint) CostFunction {
 
 func greedyCost() CostFunction {
 	fmt.Println("greedy cost")
-	return (func(a, b *Node) int {
-		return int(*a.H - *b.H)
+	return (func(nodeA, nodeB *Node) int {
+		return int(*nodeA.H - *nodeB.H)
 	})
 }
 
 func astarCost() CostFunction {
 	fmt.Println("astar cost")
-	return (func(a, b *Node) int {
-		return int(*a.G+*a.H) - int(*b.G+*b.H)
+	return (func(nodeA, nodeB *Node) int {
+		return int(*nodeA.G+*nodeA.H) - int(*nodeB.G+*nodeB.H)
 	})
 }
 
 func uniformCost() CostFunction {
 	fmt.Println("Uniform cost")
-	return (func(a, b *Node) int {
-		return int(*a.G) - int(*b.G)
+	return (func(nodeA, nodeB *Node) int {
+		return int(*nodeA.G) - int(*nodeB.G)
 	})
 }
 
 // Add on A the solv function depends on heuristic and fill Solution number
 func ManhattanHeuristic() HeuristicFunction {
 	fmt.Println("Manhattan")
-	return HeuristicFunction(func(board *Puzzle, final Puzzle) (ret int, err error) {
-		ret = 0
+	return HeuristicFunction(func(board *Puzzle, final Puzzle) (result int, error error) {
+		result = 0
 		for i := range board.Tiles {
-			current := board.Tiles[i]
-			final := final.Tiles[i]
-			ret += Abs(current.X - final.X)
-			ret += Abs(current.Y - final.Y)
+			currentTile := board.Tiles[i]
+			finalTile := final.Tiles[i]
+			result += Abs(currentTile.X - finalTile.X)
+			result += Abs(currentTile.Y - finalTile.Y)
 		}
 		return
 	})
@@ -104,21 +104,21 @@ func HorizontalConflict(current, final Tile) (conflicts int) {
 
 func LinearHeuristic() HeuristicFunction {
 	fmt.Println("Manhattan with linear conflicts")
-	return HeuristicFunction(func(board *Puzzle, final Puzzle) (ret int, err error) {
-		ret = 0
+	return HeuristicFunction(func(board *Puzzle, final Puzzle) (result int, error error) {
+		result = 0
 
 		for i := range board.Tiles {
-			current := board.Tiles[i]
-			final := final.Tiles[i]
-			if current.X != final.X {
-				ret += Abs(current.X - final.X)
+			currentTile := board.Tiles[i]
+			finalTile := final.Tiles[i]
+			if currentTile.X != finalTile.X {
+				result += Abs(currentTile.X - finalTile.X)
 			} else {
-				ret += HorizontalConflict(current, final)
+				result += HorizontalConflict(currentTile, finalTile)
 			}
-			if current.Y != final.Y {
-				ret += Abs(current.Y - final.Y)
+			if currentTile.Y != finalTile.Y {
+				result += Abs(currentTile.Y - finalTile.Y)
 			} else {
-				ret += VerticalConflict(current, final)
+				result += VerticalConflict(currentTile, finalTile)
 			}
 		}
 		return
@@ -127,10 +127,10 @@ func LinearHeuristic() HeuristicFunction {
 
 func MisplacedHeuristic() HeuristicFunction {
 	fmt.Println("Misplaced Tiles")
-	return HeuristicFunction(func(board *Puzzle, final Puzzle) (ret int, err error) {
+	return HeuristicFunction(func(board *Puzzle, final Puzzle) (result int, error error) {
 		for i := range board.Tiles {
 			if board.Board[i] != final.Board[i] {
-				ret++
+				result++
 			}
 		}
 		return
