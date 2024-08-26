@@ -19,7 +19,7 @@ func main() {
 			log.Fatal(err)
 		}
 	} else {
-		puzzleInstance, err = File(commandLineFlags.Args)
+		puzzleInstance, err = LoadPuzzleFromFile(commandLineFlags.Args)
 		if err != nil {
 			log.Fatal(err)
 		}

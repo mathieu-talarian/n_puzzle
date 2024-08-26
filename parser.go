@@ -39,7 +39,7 @@ func LoadPuzzleFromFile(filePaths []string) (puzzle *Puzzle, err error) {
 	if len(puzzleData.PuzzleBoard) == 0 {
 		return nil, fmt.Errorf("issue with input")
 	}
-	return CreatePuzzleFromData(puzzleData.PuzzleSize, puzzleData.PuzzleBoard)
+	return CreatePuzzleFromDatas(puzzleData.PuzzleSize, puzzleData.PuzzleBoard)
 }
 
 func ParseLineToList(line string, list *list.List) (*list.List, error) {

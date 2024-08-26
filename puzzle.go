@@ -292,8 +292,8 @@ func (p *Puzzle) PrintPuzzle() {
 	}
 }
 
-// PuzzleFromDatas builds puzzle from an array of int
-func PuzzleFromDatas(size int, board []int) (p *Puzzle, err error) {
+// CreatePuzzleFromDatas builds puzzle from an array of int
+func CreatePuzzleFromDatas(size int, board []int) (p *Puzzle, err error) {
 	p = initPuzzle(size)
 	p.Board = board
 	p.zeroIndex()
