@@ -8,23 +8,23 @@ import (
 )
 
 func main() {
-	var currentPuzzle *Puzzle
-	parsedFlags, err := Parse()
+	var puzzleInstance *Puzzle
+	commandLineFlags, err := ParseCommandLineFlags()
 	if err != nil {
 		log.Fatal(err)
 	}
-	if len(parsedFlags.Args) == 0 {
-		currentPuzzle, err = Generate()
+	if len(commandLineFlags.Args) == 0 {
+		puzzleInstance, err = Generate()
 		if err != nil {
 			log.Fatal(err)
 		}
 	} else {
-		currentPuzzle, err = File(parsedFlags.Args)
+		puzzleInstance, err = File(commandLineFlags.Args)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
-	Start(currentPuzzle, parsedFlags.Heuristic-1)
+	Start(puzzleInstance, commandLineFlags.Heuristic-1)
 }
 
 type Flags struct {
@@ -62,7 +62,7 @@ func computeSolv(solvableFlag *bool, solv, unsolv bool) (err error) {
 }
 
 // Parse func
-func Parse() (flags Flags, err error) {
+func ParseCommandLineFlags() (flags Flags, err error) {
 
 	var unsolv bool
 	var solv bool
@@ -92,6 +92,6 @@ func Parse() (flags Flags, err error) {
 }
 
 // Get flags
-func Get() Flags {
+func GetGlobalFlags() Flags {
 	return global
 }
