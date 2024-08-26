@@ -24,7 +24,7 @@ func main() {
 			log.Fatal(err)
 		}
 	}
-	Start(puzzle, flags.Heuristic-1, flags.Cost)
+	Start(puzzle, flags.Heuristic-1)
 }
 
 type Flags struct {

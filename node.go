@@ -34,17 +34,17 @@ func (n *Node) AlreadyClosed(closedList *Bst, uuid BstString) bool {
 }
 
 func (n Node) Execute(a *Astar, uuid BstString, state *Puzzle) {
-	id := make(chan int, len(L))
-	nodes := make(chan *Node, len(L))
+	id := make(chan int, len(ActionsList))
+	nodes := make(chan *Node, len(ActionsList))
 	defer close(id)
 	defer close(nodes)
-	for range L {
+	for range ActionsList {
 		go worker(id, state.Copy(), a, &n, nodes)
 	}
-	for _, v := range L {
+	for _, v := range ActionsList {
 		id <- v.Value
 	}
-	for range L {
+	for range ActionsList {
 		add(<-nodes, a, uuid)
 	}
 

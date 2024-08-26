@@ -14,15 +14,15 @@ import (
 
 func (p *Puzzle) Move(action int) {
 	switch action {
-	case Top:
+	case ActionTop:
 		p.Board.MoveTop(p.Zero.I, p.Size)
-	case Bot:
+	case ActionBot:
 		p.Board.MoveBot(p.Zero.I, p.Size)
 
-	case Left:
+	case ActionLeft:
 		p.Board.MoveLeft(p.Zero.I)
 
-	case Right:
+	case ActionRight:
 		p.Board.MoveRight(p.Zero.I)
 	}
 
@@ -314,13 +314,13 @@ type Tiles []Tile
 // TestAction switch action kind and returns a bool
 func (t *Tile) TestAction(action int, size int) bool {
 	switch action {
-	case Top:
+	case ActionTop:
 		return !(t.Y-1 < 0)
-	case Bot:
+	case ActionBot:
 		return t.Y+1 < size
-	case Left:
+	case ActionLeft:
 		return !(t.X-1 < 0)
-	case Right:
+	case ActionRight:
 		return t.X+1 < size
 	}
 	return false

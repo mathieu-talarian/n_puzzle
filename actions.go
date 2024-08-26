@@ -30,18 +30,18 @@ var ActionNone = Action{
 var ActionsList = [4]Action{
 	{
 		"Top",
-		Top,
+		ActionTop,
 	},
 	{
 		"Bot",
-		Bot,
+		ActionBot,
 	},
 	{
 		"Left",
-		Left,
+		ActionLeft,
 	},
 	{
 		"Right",
-		Right,
+		ActionRight,
 	},
 }

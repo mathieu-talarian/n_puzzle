@@ -8,8 +8,8 @@ import (
 var costFunction CostFunction
 
 // Start function init astar
-func Start(puzzle *Puzzle, heuristic uint, cost uint) {
-	astar := NewAstar(puzzle, heuristic, cost)
+func Start(puzzle *Puzzle, heuristic uint) {
+	astar := NewAstar(puzzle, heuristic)
 	costFunction = FindCostFunction(heuristic)
 	if !astar.CheckSolvability() {
 		log.Fatal("This puzzle is unsolvable")
@@ -23,13 +23,8 @@ func Start(puzzle *Puzzle, heuristic uint, cost uint) {
 	}
 }
 
-const (
-	//No action
-	No = iota
-)
-
 func runN(a *Astar /* , FCost */) (q *Node, err error) {
-	if err = a.RootNode(No); err != nil {
+	if err = a.RootNode(); err != nil {
 		return
 	}
 	for a.OpenList.Size() > 0 {
@@ -80,5 +75,5 @@ func add(newNode *Node, a *Astar, uuid BstString) {
 }
 
 func worker(id <-chan int, puzzle *Puzzle, a *Astar, n *Node, results chan<- *Node) {
-	move(L[<-id], puzzle, a, n, results)
+	move(ActionsList[<-id], puzzle, a, n, results)
 }

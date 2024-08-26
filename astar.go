@@ -1,24 +1,24 @@
 package main
 
 import (
-	rank_paring "github.com/theodesp/go-heaps/rank_pairing"
+	rankparing "github.com/theodesp/go-heaps/rank_pairing"
 )
 
 type Astar struct {
 	*Puzzle
 	Goal       Puzzle
-	OpenList   *rank_paring.RPHeap
+	OpenList   *rankparing.RPHeap
 	ClosedList *Bst
 	Turns      uint
 	MaxState   uint
 	HeuristicFunction
 }
 
-func NewAstar(p *Puzzle, h, c uint) *Astar {
+func NewAstar(p *Puzzle, h uint) *Astar {
 	return &Astar{
 		Puzzle:            p,
 		Goal:              Goal(p.Size),
-		OpenList:          rank_paring.New().Init(),
+		OpenList:          rankparing.New().Init(),
 		ClosedList:        nil,
 		HeuristicFunction: FindHeuristic(h),
 		Turns:             0,
@@ -26,13 +26,13 @@ func NewAstar(p *Puzzle, h, c uint) *Astar {
 	}
 }
 
-func (a *Astar) RootNode(action int) error {
+func (a *Astar) RootNode() error {
 	h, err := a.HeuristicFunction(a.Puzzle, a.Goal)
 	if err != nil {
 		return err
 	}
 	a.OpenList.Insert(NewNode(
-		&None.Name,
+		&ActionNone.Name,
 		0,
 		uint(h),
 		nil,
