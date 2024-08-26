@@ -12,128 +12,128 @@ import (
 	"github.com/fatih/color"
 )
 
-func (p *Puzzle) Move(action int) {
+func (puzzle *Puzzle) Move(action int) {
 	switch action {
 	case ActionTop:
-		p.Board.MoveTop(p.Zero.I, p.Size)
+		puzzle.Board.MoveTop(puzzle.ZeroPosition.Index, puzzle.Size)
 	case ActionBot:
-		p.Board.MoveBot(p.Zero.I, p.Size)
+		puzzle.Board.MoveBot(puzzle.ZeroPosition.Index, puzzle.Size)
 
 	case ActionLeft:
-		p.Board.MoveLeft(p.Zero.I)
+		puzzle.Board.MoveLeft(puzzle.ZeroPosition.Index)
 
 	case ActionRight:
-		p.Board.MoveRight(p.Zero.I)
+		puzzle.Board.MoveRight(puzzle.ZeroPosition.Index)
 	}
 
-	p.zeroIndex()
-	p.TabTiles()
+	puzzle.UpdateZeroIndex()
+	puzzle.UpdateTilePositions()
 }
 
-func (b *Board) MoveTop(i, size int) {
-	tmp := (*b)[i-size]
-	(*b)[i-size] = 0
-	(*b)[i] = tmp
+func (board *Board) MoveTop(index, size int) {
+	temp := (*board)[index-size]
+	(*board)[index-size] = 0
+	(*board)[index] = temp
 }
 
-func (b *Board) MoveBot(i, size int) {
-	tmp := (*b)[i+size]
-	(*b)[i+size] = 0
-	(*b)[i] = tmp
+func (board *Board) MoveBot(index, size int) {
+	temp := (*board)[index+size]
+	(*board)[index+size] = 0
+	(*board)[index] = temp
 }
 
-func (b *Board) MoveLeft(i int) {
-	tmp := (*b)[i-1]
-	(*b)[i-1] = 0
-	(*b)[i] = tmp
+func (board *Board) MoveLeft(index int) {
+	temp := (*board)[index-1]
+	(*board)[index-1] = 0
+	(*board)[index] = temp
 }
 
-func (b *Board) MoveRight(i int) {
-	tmp := (*b)[i+1]
-	(*b)[i+1] = 0
-	(*b)[i] = tmp
+func (board *Board) MoveRight(index int) {
+	temp := (*board)[index+1]
+	(*board)[index+1] = 0
+	(*board)[index] = temp
 }
 
-func (p *Puzzle) makeGoals() {
-	cur, ix := 1, 1
-	x, y, iy := 0, 0, 0
+func (puzzle *Puzzle) CreateGoalState() {
+	currentValue, incrementX := 1, 1
+	x, y, incrementY := 0, 0, 0
 	for {
-		(p.Board)[x+y*p.Size] = cur
-		if cur == 0 {
+		(puzzle.Board)[x+y*puzzle.Size] = currentValue
+		if currentValue == 0 {
 			break
 		}
-		cur++
-		if x+ix == p.Size || x+ix < 0 || (ix != 0 && (p.Board)[x+ix+y*p.Size] != -1) {
-			iy = ix
-			ix = 0
-		} else if y+iy == p.Size || y+iy < 0 || (iy != 0 && (p.Board)[x+(y+iy)*p.Size] != -1) {
-			ix = -iy
-			iy = 0
+		currentValue++
+		if x+incrementX == puzzle.Size || x+incrementX < 0 || (incrementX != 0 && (puzzle.Board)[x+incrementX+y*puzzle.Size] != -1) {
+			incrementY = incrementX
+			incrementX = 0
+		} else if y+incrementY == puzzle.Size || y+incrementY < 0 || (incrementY != 0 && (puzzle.Board)[x+(y+incrementY)*puzzle.Size] != -1) {
+			incrementX = -incrementY
+			incrementY = 0
 		}
-		x += ix
-		y += iy
-		if cur == p.Size*p.Size {
-			cur = 0
+		x += incrementX
+		y += incrementY
+		if currentValue == puzzle.Size*puzzle.Size {
+			currentValue = 0
 		}
 	}
 }
 
-func initPuzzle(size int) *Puzzle {
-	var u = &Puzzle{
+func InitializePuzzle(size int) *Puzzle {
+	var puzzle = &Puzzle{
 		Size:  size,
 		Board: make([]int, size*size),
 		Tiles: make([]Tile, size*size),
 	}
-	for i := range u.Board {
-		u.Board[i] = -1
+	for i := range puzzle.Board {
+		puzzle.Board[i] = -1
 	}
-	return u
+	return puzzle
 }
-func (p *Puzzle) swapEmpty() (err error) {
-	if err = p.zeroIndex(); err != nil {
+func (puzzle *Puzzle) SwapEmptyTile() (err error) {
+	if err = puzzle.UpdateZeroIndex(); err != nil {
 		log.Fatal(err)
 	}
-	poss := make([]int, 0)
-	if (p.Zero.I % p.Size) > 0 {
-		poss = append(poss, p.Zero.I-1)
+	possibleMoves := make([]int, 0)
+	if (puzzle.ZeroPosition.Index % puzzle.Size) > 0 {
+		possibleMoves = append(possibleMoves, puzzle.ZeroPosition.Index-1)
 	}
-	if (p.Zero.I % p.Size) < (p.Size - 1) {
-		poss = append(poss, p.Zero.I+1)
+	if (puzzle.ZeroPosition.Index % puzzle.Size) < (puzzle.Size - 1) {
+		possibleMoves = append(possibleMoves, puzzle.ZeroPosition.Index+1)
 	}
-	if (p.Zero.I / p.Size) > 0 {
-		poss = append(poss, p.Zero.I-p.Size)
+	if (puzzle.ZeroPosition.Index / puzzle.Size) > 0 {
+		possibleMoves = append(possibleMoves, puzzle.ZeroPosition.Index-puzzle.Size)
 	}
-	if (p.Zero.I / p.Size) < (p.Size - 1) {
-		poss = append(poss, p.Zero.I+p.Size)
+	if (puzzle.ZeroPosition.Index / puzzle.Size) < (puzzle.Size - 1) {
+		possibleMoves = append(possibleMoves, puzzle.ZeroPosition.Index+puzzle.Size)
 	}
-	n, _ := rand.Int(rand.Reader, big.NewInt(int64(len(poss))))
-	swi := poss[n.Int64()]
-	p.Board[p.Zero.I], p.Board[swi] = p.Board[swi], 0
+	randomIndex, _ := rand.Int(rand.Reader, big.NewInt(int64(len(possibleMoves))))
+	swapIndex := possibleMoves[randomIndex.Int64()]
+	puzzle.Board[puzzle.ZeroPosition.Index], puzzle.Board[swapIndex] = puzzle.Board[swapIndex], 0
 	return nil
 }
 
-func (p *Puzzle) makePuzzle(solvable bool, iterations uint) (err error) {
-	p.makeGoals()
+func (puzzle *Puzzle) GeneratePuzzle(solvable bool, iterations uint) (err error) {
+	puzzle.CreateGoalState()
 	for i := 0; uint(i) < iterations; i++ {
-		if err = p.swapEmpty(); err != nil {
+		if err = puzzle.SwapEmptyTile(); err != nil {
 			return
 		}
 	}
 	if !solvable {
-		if p.Board[0] == 0 || p.Board[1] == 0 {
-			p.Board[len(p.Board)-1], p.Board[len(p.Board)-2] = p.Board[len(p.Board)-2], p.Board[len(p.Board)-1]
+		if puzzle.Board[0] == 0 || puzzle.Board[1] == 0 {
+			puzzle.Board[len(puzzle.Board)-1], puzzle.Board[len(puzzle.Board)-2] = puzzle.Board[len(puzzle.Board)-2], puzzle.Board[len(puzzle.Board)-1]
 		} else {
-			p.Board[0], p.Board[1] = p.Board[1], p.Board[0]
+			puzzle.Board[0], puzzle.Board[1] = puzzle.Board[1], puzzle.Board[0]
 		}
 	}
 	return
 }
 
-// ZeroIndex func
-func (p *Puzzle) zeroIndex() (err error) {
-	for i := range p.Board {
-		if p.Board[i] == 0 {
-			p.Zero.I = i
+// UpdateZeroIndex func
+func (puzzle *Puzzle) UpdateZeroIndex() (err error) {
+	for i := range puzzle.Board {
+		if puzzle.Board[i] == 0 {
+			puzzle.ZeroPosition.Index = i
 			return
 		}
 	}
@@ -141,61 +141,61 @@ func (p *Puzzle) zeroIndex() (err error) {
 }
 
 // Generate function
-func Generate() (p *Puzzle, err error) {
-	f := GetGlobalFlags()
-	p = initPuzzle(f.Size)
-	if err = p.makePuzzle(f.Solvable, f.Iterations); err != nil {
+func Generate() (puzzle *Puzzle, err error) {
+	flags := GetGlobalFlags()
+	puzzle = InitializePuzzle(flags.Size)
+	if err = puzzle.GeneratePuzzle(flags.Solvable, flags.Iterations); err != nil {
 		return
 	}
-	if err = p.zeroIndex(); err != nil {
+	if err = puzzle.UpdateZeroIndex(); err != nil {
 		return
 	}
-	p.TabTiles()
+	puzzle.UpdateTilePositions()
 	return
 }
 
-// Tiling returns a tile from a position
-func Tiling(size int, pos int) (t Tile) {
-	t.X = pos % size
-	t.Y = pos / size
+// GetTilePosition returns a tile from a position
+func GetTilePosition(size int, position int) (tile Tile) {
+	tile.X = position % size
+	tile.Y = position / size
 	return
 }
 
-// TabTiles tiles every puzzle tile
-func (p *Puzzle) TabTiles() {
-	for i := 0; i < p.Size*p.Size; i++ {
-		p.Tiles[p.Board[i]] = Tiling(p.Size, i)
+// UpdateTilePositions updates every puzzle tile position
+func (puzzle *Puzzle) UpdateTilePositions() {
+	for i := 0; i < puzzle.Size*puzzle.Size; i++ {
+		puzzle.Tiles[puzzle.Board[i]] = GetTilePosition(puzzle.Size, i)
 	}
 }
 
 // Goal returns a Puzzle and create goal puzzle
 func Goal(size int) Puzzle {
-	tmp := initPuzzle(size)
-	tmp.makeGoals()
-	tmp.zeroIndex()
-	tmp.TabTiles()
-	return *tmp
+	tempPuzzle := InitializePuzzle(size)
+	tempPuzzle.CreateGoalState()
+	tempPuzzle.UpdateZeroIndex()
+	tempPuzzle.UpdateTilePositions()
+	return *tempPuzzle
 }
 
 // Inversions returns inversions to calc solvability
-func (p *Puzzle) Inversions() (inversions int) {
-	for i := range p.Board {
-		inversions += inversion(p.Board, i)
+func (puzzle *Puzzle) Inversions() (inversions int) {
+	for i := range puzzle.Board {
+		inversions += CalculateInversions(puzzle.Board, i)
 	}
 	return
 }
 
-func inversion(b Board, i int) (inversions int) {
-	if b[i] == 0 {
+func CalculateInversions(board Board, index int) (inversions int) {
+	if board[index] == 0 {
 		return 0
 	}
-	slice := b[i:]
-	n := b[i]
+	slice := board[index:]
+	currentValue := board[index]
 	for r := range slice {
 		if slice[r] == 0 {
 			continue
 		}
-		if n > slice[r] {
+		if currentValue > slice[r] {
 			inversions++
 		}
 	}
@@ -203,12 +203,12 @@ func inversion(b Board, i int) (inversions int) {
 }
 
 // Mod returns
-func (p *Puzzle) Mod(i int) int {
-	return p.Size % i
+func (puzzle *Puzzle) Mod(i int) int {
+	return puzzle.Size % i
 }
 
 type TilePosition struct {
-	I int
+	Index int
 }
 
 // Board is a array of int
@@ -216,76 +216,76 @@ type Board []int
 
 // Puzzle struct
 type Puzzle struct {
-	Zero TilePosition
+	ZeroPosition TilePosition
 	Board
 	Size int
 	Tiles
 }
 
-func decompute(str string) *Puzzle {
-	t1 := strings.Split(str, "#")
+func Decompute(encodedString string) *Puzzle {
+	parts := strings.Split(encodedString, "#")
 	var board Board
-	size, _ := strconv.Atoi(t1[1])
-	t2 := strings.Split(t1[0], "|")
+	size, _ := strconv.Atoi(parts[1])
+	boardValues := strings.Split(parts[0], "|")
 	board = make([]int, size*size)
 	for i := 0; i < size*size; i++ {
-		y, _ := strconv.Atoi(t2[i])
-		board[i] = y
+		value, _ := strconv.Atoi(boardValues[i])
+		board[i] = value
 	}
-	p := &Puzzle{
+	puzzle := &Puzzle{
 		Board: board,
 		Size:  size,
 		Tiles: make([]Tile, size*size),
 	}
-	p.TabTiles()
-	p.zeroIndex()
-	return p
+	puzzle.UpdateTilePositions()
+	puzzle.UpdateZeroIndex()
+	return puzzle
 }
 
 // CreateUUID builds an uuid from a string
-func (p *Puzzle) CreateUUID() TreeString {
-	b := p.Board
-	tab := make([]string, p.Size*p.Size)
-	for k, v := range b {
-		tab[k] = strconv.Itoa(v)
+func (puzzle *Puzzle) CreateUUID() TreeString {
+	board := puzzle.Board
+	stringValues := make([]string, puzzle.Size*puzzle.Size)
+	for index, value := range board {
+		stringValues[index] = strconv.Itoa(value)
 	}
-	return TreeString(strings.Join(tab, "|"))
+	return TreeString(strings.Join(stringValues, "|"))
 }
 
 // Copy deep copy board to board
-func (b Board) Copy(i int) Board {
-	nb := make([]int, i*i)
-	copy(nb, b)
-	return nb
+func (board Board) Copy(size int) Board {
+	newBoard := make([]int, size*size)
+	copy(newBoard, board)
+	return newBoard
 }
 
 // Copy deep copy puzzle to puzzle
-func (p *Puzzle) Copy() *Puzzle {
+func (puzzle *Puzzle) Copy() *Puzzle {
 	return &Puzzle{
-		Zero:  p.Zero,
-		Board: p.Board.Copy(p.Size),
-		Size:  p.Size,
-		Tiles: p.Tiles.Copy(p.Size),
+		ZeroPosition: puzzle.ZeroPosition,
+		Board:        puzzle.Board.Copy(puzzle.Size),
+		Size:         puzzle.Size,
+		Tiles:        puzzle.Tiles.Copy(puzzle.Size),
 	}
 }
 
 // Copy deep copy puzzle tiles to tiles
-func (t Tiles) Copy(i int) Tiles {
-	np := make([]Tile, i*i)
-	copy(np, t)
-	return np
+func (tiles Tiles) Copy(size int) Tiles {
+	newTiles := make([]Tile, size*size)
+	copy(newTiles, tiles)
+	return newTiles
 }
 
 // PrintPuzzle prints the puzzle on standard input
-func (p *Puzzle) PrintPuzzle() {
-	u := p.Board
-	padding := len(strconv.Itoa(p.Size*p.Size)) + 1
-	for y := 0; y < p.Size; y++ {
-		for x := 0; x < p.Size; x++ {
-			if u[x+y*p.Size] == 0 {
-				color.New(color.FgRed).Printf("|%*d| ", padding, u[x+y*p.Size])
+func (puzzle *Puzzle) PrintPuzzle() {
+	board := puzzle.Board
+	padding := len(strconv.Itoa(puzzle.Size*puzzle.Size)) + 1
+	for y := 0; y < puzzle.Size; y++ {
+		for x := 0; x < puzzle.Size; x++ {
+			if board[x+y*puzzle.Size] == 0 {
+				color.New(color.FgRed).Printf("|%*d| ", padding, board[x+y*puzzle.Size])
 			} else {
-				fmt.Printf("|%*d| ", padding, u[x+y*p.Size])
+				fmt.Printf("|%*d| ", padding, board[x+y*puzzle.Size])
 			}
 		}
 		fmt.Printf("\n")
@@ -293,11 +293,11 @@ func (p *Puzzle) PrintPuzzle() {
 }
 
 // CreatePuzzleFromDatas builds puzzle from an array of int
-func CreatePuzzleFromDatas(size int, board []int) (p *Puzzle, err error) {
-	p = initPuzzle(size)
-	p.Board = board
-	p.zeroIndex()
-	p.TabTiles()
+func CreatePuzzleFromDatas(size int, board []int) (puzzle *Puzzle, err error) {
+	puzzle = InitializePuzzle(size)
+	puzzle.Board = board
+	puzzle.UpdateZeroIndex()
+	puzzle.UpdateTilePositions()
 	return
 }
 
@@ -311,43 +311,43 @@ type Tile struct {
 type Tiles []Tile
 
 // TestAction switch action kind and returns a bool
-func (t *Tile) TestAction(action int, size int) bool {
+func (tile *Tile) TestAction(action int, size int) bool {
 	switch action {
 	case ActionTop:
-		return !(t.Y-1 < 0)
+		return !(tile.Y-1 < 0)
 	case ActionBot:
-		return t.Y+1 < size
+		return tile.Y+1 < size
 	case ActionLeft:
-		return !(t.X-1 < 0)
+		return !(tile.X-1 < 0)
 	case ActionRight:
-		return t.X+1 < size
+		return tile.X+1 < size
 	}
 	return false
 }
 
 // Bot prints bot
-func (t *Tile) Bot() bool {
+func (tile *Tile) Bot() bool {
 	fmt.Println("bot")
 	return false
 }
 
 // Left prints left
-func (t *Tile) Left() bool {
+func (tile *Tile) Left() bool {
 	fmt.Println("Left")
 	return false
 }
 
 // Right prints right
-func (t *Tile) Right() bool {
+func (tile *Tile) Right() bool {
 	fmt.Println("right")
 	return false
 }
 
 // ToTile computes an intex to an x - y  value (tile)
-func (t *TilePosition) ToTile(s int) (y *Tile) {
-	return &Tile{t.I % s, t.I / s}
+func (tilePosition *TilePosition) ToTile(size int) (tile *Tile) {
+	return &Tile{tilePosition.Index % size, tilePosition.Index / size}
 }
 
-func (p *Puzzle) compute() string {
-	return string(p.CreateUUID()) + "#" + strconv.Itoa(p.Size)
+func (puzzle *Puzzle) ComputeEncodedState() string {
+	return string(puzzle.CreateUUID()) + "#" + strconv.Itoa(puzzle.Size)
 }
