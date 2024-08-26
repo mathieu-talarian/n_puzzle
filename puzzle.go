@@ -253,7 +253,7 @@ func (puzzle *Puzzle) CreateUUID() TreeString {
 }
 
 // Copy deep copy board to board
-func (board Board) Copy(size int) Board {
+func (board *Board) Copy(size int) Board {
 	newBoard := make([]int, size*size)
 	copy(newBoard, board)
 	return newBoard
