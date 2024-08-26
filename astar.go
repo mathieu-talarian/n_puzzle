@@ -14,39 +14,39 @@ type Astar struct {
 	HeuristicFunction
 }
 
-func NewAstar(p *Puzzle, h uint) *Astar {
+func NewAstar(puzzle *Puzzle, heuristic uint) *Astar {
 	return &Astar{
-		Puzzle:            p,
-		Goal:              Goal(p.Size),
+		Puzzle:            puzzle,
+		Goal:              Goal(puzzle.Size),
 		OpenList:          rankparing.New().Init(),
 		ClosedList:        nil,
-		HeuristicFunction: FindHeuristic(h),
+		HeuristicFunction: FindHeuristic(heuristic),
 		Turns:             0,
 		MaxState:          0,
 	}
 }
 
-func (a *Astar) RootNode() error {
-	h, err := a.HeuristicFunction(a.Puzzle, a.Goal)
+func (astar *Astar) RootNode() error {
+	heuristic, err := astar.HeuristicFunction(astar.Puzzle, astar.Goal)
 	if err != nil {
 		return err
 	}
-	a.OpenList.Insert(NewNode(
+	astar.OpenList.Insert(NewNode(
 		&ActionNone.Name,
 		0,
 		uint(h),
 		nil,
-		a.Puzzle))
+		astar.Puzzle))
 	return nil
 }
 
-func (a *Astar) CheckSolvability() bool {
-	a.Puzzle.PrintPuzzle()
-	pI := a.Puzzle.Inversions()
-	gI := a.Goal.Inversions()
-	if a.Puzzle.Mod(2) == 0 {
-		pI += a.Puzzle.Zero.I / a.Size
-		gI += a.Goal.Zero.I / a.Size
+func (astar *Astar) CheckSolvability() bool {
+	astar.Puzzle.PrintPuzzle()
+	puzzleInversions := astar.Puzzle.Inversions()
+	goalInversions := astar.Goal.Inversions()
+	if astar.Puzzle.Mod(2) == 0 {
+		puzzleInversions += astar.Puzzle.Zero.I / astar.Size
+		goalInversions += astar.Goal.Zero.I / astar.Size
 	}
-	return pI%2 == gI%2
+	return puzzleInversions%2 == goalInversions%2
 }
