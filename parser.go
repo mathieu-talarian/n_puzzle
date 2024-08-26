@@ -10,119 +10,118 @@ import (
 	"strings"
 )
 
-type PuzzleData struct {
-	Size  int
-	Board []int
+type PuzzleConfiguration struct {
+	PuzzleSize  int
+	PuzzleBoard []int
 }
 
-func File(av []string) (puzzle *Puzzle, err error) {
-	lineList := list.New()
-	if len(av) > 1 {
+func LoadPuzzleFromFile(filePaths []string) (puzzle *Puzzle, err error) {
+	linesList := list.New()
+	if len(filePaths) > 1 {
 		return nil, errors.New("too much arguments")
 	}
-	file, err := os.Open(av[0])
+	file, err := os.Open(filePaths[0])
 	if err != nil {
 		return nil, err
 	}
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		lineList.Init()
-		newList, err := ScanToList(scanner.Text(), lineList)
-		if err == nil && newList != nil && newList.Len() != 0 {
-			lineList.PushBack(newList)
+		linesList.Init()
+		parsedList, err := ParseLineToList(scanner.Text(), linesList)
+		if err == nil && parsedList != nil && parsedList.Len() != 0 {
+			linesList.PushBack(parsedList)
 		}
 	}
-	data, err := DataFromList(lineList)
+	puzzleData, err := ExtractDataFromList(linesList)
 	if err != nil {
 		return nil, err
 	}
-	if len(data.Board) == 0 {
+	if len(puzzleData.PuzzleBoard) == 0 {
 		return nil, fmt.Errorf("issue with input")
 	}
-	return PuzzleFromDatas(data.Size, data.Board)
+	return CreatePuzzleFromData(puzzleData.PuzzleSize, puzzleData.PuzzleBoard)
 }
 
-func ScanToList(text string, l *list.List) (*list.List, error) {
-	tab := strings.Fields(text)
-	for i := range tab {
-		if strings.HasPrefix(tab[i], "#") {
-			return l, nil
+func ParseLineToList(line string, list *list.List) (*list.List, error) {
+	fields := strings.Fields(line)
+	for i := range fields {
+		if strings.HasPrefix(fields[i], "#") {
+			return list, nil
 		}
-		l.PushBack(tab[i])
+		list.PushBack(fields[i])
 	}
-	return l, nil
+	return list, nil
 }
 
-func (d *PuzzleData) ListCheckSize(l *list.List) error {
-	if l.Len() != 1 {
+func (puzzleData *PuzzleConfiguration) ValidateListSize(list *list.List) error {
+	if list.Len() != 1 {
 		return errors.New("issue with puzzle size")
-	} else if s, err := strconv.Atoi(l.Front().Value.(string)); s <= 2 && err == nil {
-		return errors.New(fmt.Sprintln("Size too short or negative : ", s))
+	} else if size, err := strconv.Atoi(list.Front().Value.(string)); size <= 2 && err == nil {
+		return errors.New(fmt.Sprintln("Size too short or negative : ", size))
 	} else if err != nil {
 		return err
 	} else {
-		d.Size = s
-		d.Board = make([]int, s*s)
-		for i := range d.Board {
-			d.Board[i] = -1
+		puzzleData.PuzzleSize = size
+		puzzleData.PuzzleBoard = make([]int, size*size)
+		for i := range puzzleData.PuzzleBoard {
+			puzzleData.PuzzleBoard[i] = -1
 		}
 	}
 	return nil
 }
 
-func DataFromList(l *list.List) (d *PuzzleData, err error) {
-	d = new(PuzzleData)
-	i := -1
-	cpt := 0
-	for e := l.Front(); e != nil; e = e.Next() {
-		if i == -1 {
-			if err = d.ListCheckSize(e.Value.(*list.List)); err != nil {
+func ExtractDataFromList(list *list.List) (puzzleData *PuzzleConfiguration, err error) {
+	puzzleData = new(PuzzleConfiguration)
+	index := -1
+	count := 0
+	for element := list.Front(); element != nil; element = element.Next() {
+		if index == -1 {
+			if err = puzzleData.ValidateListSize(element.Value.(*list.List)); err != nil {
 				return
 			}
 		} else {
-			if l.Len()-1 > d.Size {
+			if list.Len()-1 > puzzleData.PuzzleSize {
 				return nil, errors.New("too much lanes for board")
 			}
-			if e.Value.(*list.List).Len() != d.Size {
-				return nil, errors.New(fmt.Sprintln("Issue with size for lane ", i+1))
+			if element.Value.(*list.List).Len() != puzzleData.PuzzleSize {
+				return nil, errors.New(fmt.Sprintln("Issue with size for lane ", index+1))
 			}
-			var v int
-			for ee := e.Value.(*list.List).Front(); ee != nil; ee = ee.Next() {
-				v, err = strconv.Atoi(ee.Value.(string))
+			var value int
+			for subElement := element.Value.(*list.List).Front(); subElement != nil; subElement = subElement.Next() {
+				value, err = strconv.Atoi(subElement.Value.(string))
 				if err != nil {
 					return
 				}
-				if err = CheckNumberIntoBoard(v, d.Size, d.Board); err != nil {
+				if err = ValidateNumberInBoard(value, puzzleData.PuzzleSize, puzzleData.PuzzleBoard); err != nil {
 					return nil, err
 				}
-				d.Board[i] = v
-				i++
-				cpt++
+				puzzleData.PuzzleBoard[index] = value
+				index++
+				count++
 			}
-			i--
+			index--
 		}
-		// Si le nombre est superieur ou egal a 0 inferieur a size * size, pas deja utilise ou
-		i++
+		index++
 	}
-	if cpt < d.Size*d.Size {
-		return nil, fmt.Errorf("issue with puzzle, missing datas")
+	if count < puzzleData.PuzzleSize*puzzleData.PuzzleSize {
+		return nil, fmt.Errorf("issue with puzzle, missing data")
 	}
 	return
 }
 
-func CheckNumberIntoBoard(n, size int, board []int) error {
-	if n < 0 || n >= size*size {
-		return errors.New(fmt.Sprintln("Number too low or too high :", n))
+func ValidateNumberInBoard(number, size int, board []int) error {
+	if number < 0 || number >= size*size {
+		return errors.New(fmt.Sprintln("Number too low or too high :", number))
 
 	}
-	cpt := 0
-	for _, b := range board {
-		if b == n {
-			cpt++
+	count := 0
+	for _, boardNumber := range board {
+		if boardNumber == number {
+			count++
 		}
 	}
-	if cpt > 0 {
-		return errors.New(fmt.Sprintln("Number already exists in Board (twice or more):", n))
+	if count > 0 {
+		return errors.New(fmt.Sprintln("Number already exists in Board (twice or more):", number))
 	}
 	return nil
 }
