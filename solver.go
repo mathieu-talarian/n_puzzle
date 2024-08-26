@@ -9,17 +9,17 @@ var costFunction CostFunction
 
 /* Start initializes the A* solver and begins the solving process */
 func Start(puzzle *Puzzle, heuristic uint) {
-	astar := NewAStarSolver(puzzle, heuristic)
+	aStar := NewAStarSolver(puzzle, heuristic)
 	costFunction = FindCostFunction(heuristic)
-	if !astar.IsSolvable() {
+	if !aStar.IsSolvable() {
 		log.Fatal("This puzzle is unsolvable")
 	}
-	if node, err := runN(astar); err != nil {
+	if node, err := runN(aStar); err != nil {
 		log.Fatal(err)
 	} else {
 		node.PrintSolutionPath()
-		fmt.Println("Number of turns:", astar.NumberOfTurns)
-		fmt.Println("Max state:", astar.MaxStatesReached)
+		fmt.Println("Number of turns:", aStar.NumberOfTurns)
+		fmt.Println("Max state:", aStar.MaxStatesReached)
 	}
 }
 
