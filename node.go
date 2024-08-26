@@ -33,7 +33,7 @@ func (n *Node) AlreadyClosed(closedList *BinarySearchTree, uuid TreeString) bool
 	return ok
 }
 
-func (n Node) Execute(a *Astar, uuid TreeString, state *Puzzle) {
+func (n Node) Execute(a *AStarSolver, uuid TreeString, state *Puzzle) {
 	id := make(chan int, len(ActionsList))
 	nodes := make(chan *Node, len(ActionsList))
 	defer close(id)

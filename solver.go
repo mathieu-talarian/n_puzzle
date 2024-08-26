@@ -9,26 +9,26 @@ var costFunction CostFunction
 
 // Start function init astar
 func Start(puzzle *Puzzle, heuristic uint) {
-	astar := NewAstar(puzzle, heuristic)
+	astar := NewAStarSolver(puzzle, heuristic)
 	costFunction = FindCostFunction(heuristic)
-	if !astar.CheckSolvability() {
+	if !astar.IsSolvable() {
 		log.Fatal("This puzzle is unsolvable")
 	}
 	if node, err := runN(astar); err != nil {
 		log.Fatal(err)
 	} else {
 		node.PrintResult()
-		fmt.Println("Number of turns:", astar.Turns)
-		fmt.Println("Max state:", astar.MaxState)
+		fmt.Println("Number of turns:", astar.NumberOfTurns)
+		fmt.Println("Max state:", astar.MaxStatesReached)
 	}
 }
 
-func runN(a *Astar /* , FCost */) (q *Node, err error) {
-	if err = a.RootNode(); err != nil {
+func runN(a *AStarSolver) (q *Node, err error) {
+	if err = a.InitializeRootNode(); err != nil {
 		return
 	}
-	for a.OpenList.Size() > 0 {
-		node := a.OpenList.DeleteMin()
+	for a.OpenNodesHeap.Size() > 0 {
+		node := a.OpenNodesHeap.DeleteMin()
 		state := decompute(node.(*Node).State)
 		uuid := state.CreateUUID()
 
@@ -36,27 +36,27 @@ func runN(a *Astar /* , FCost */) (q *Node, err error) {
 			return node.(*Node), nil
 		}
 
-		(*a).Turns++
+		(*a).NumberOfTurns++
 		node.(*Node).Execute(a, uuid, state)
-		num := a.OpenList.Size()
-		if num > int(a.MaxState) {
-			a.MaxState = uint(num)
+		num := a.OpenNodesHeap.Size()
+		if num > int(a.MaxStatesReached) {
+			a.MaxStatesReached = uint(num)
 		}
-		if a.ClosedList == nil {
-			a.ClosedList = NewBst(uuid)
+		if a.ClosedNodesTree == nil {
+			a.ClosedNodesTree = NewBst(uuid)
 		} else {
-			a.ClosedList.Insert(uuid)
+			a.ClosedNodesTree.Insert(uuid)
 		}
 	}
 	return
 }
 
-func move(action Action, state *Puzzle, astar *Astar, n *Node, results chan<- *Node) {
+func move(action Action, state *Puzzle, aStar *AStarSolver, n *Node, results chan<- *Node) {
 	tile := state.Zero.ToTile(state.Size)
 	size := state.Size
 	if tile.TestAction(action.Value, size) {
 		state.Move(action.Value)
-		h, err := astar.HeuristicFunction(state, astar.Goal)
+		h, err := aStar.HeuristicFunc(state, aStar.GoalPuzzle)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -66,14 +66,14 @@ func move(action Action, state *Puzzle, astar *Astar, n *Node, results chan<- *N
 	}
 }
 
-func add(newNode *Node, a *Astar, uuid TreeString) {
+func add(newNode *Node, aStar *AStarSolver, uuid TreeString) {
 	if newNode != nil {
-		if !newNode.AlreadyClosed(a.ClosedList, uuid) {
-			a.OpenList.Insert(newNode)
+		if !newNode.AlreadyClosed(aStar.ClosedNodesTree, uuid) {
+			aStar.OpenNodesHeap.Insert(newNode)
 		}
 	}
 }
 
-func worker(id <-chan int, puzzle *Puzzle, a *Astar, n *Node, results chan<- *Node) {
-	move(ActionsList[<-id], puzzle, a, n, results)
+func worker(id <-chan int, puzzle *Puzzle, aStar *AStarSolver, n *Node, results chan<- *Node) {
+	move(ActionsList[<-id], puzzle, aStar, n, results)
 }
