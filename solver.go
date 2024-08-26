@@ -7,7 +7,6 @@ import (
 
 var costFunction CostFunction
 
-/* Start initializes the A* solver and begins the solving process */
 func Start(puzzle *Puzzle, heuristic uint) {
 	aStar := NewAStarSolver(puzzle, heuristic)
 	costFunction = FindCostFunction(heuristic)
@@ -68,8 +67,4 @@ func add(newNode *SearchNode, aStar *AStarSolver, uuid TreeString) {
 			aStar.OpenNodesHeap.Insert(newNode)
 		}
 	}
-}
-
-func worker(id <-chan int, puzzle *Puzzle, aStar *AStarSolver, n *SearchNode, results chan<- *SearchNode) {
-	move(ActionsList[<-id], puzzle, aStar, &n, results)
 }
