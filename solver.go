@@ -29,7 +29,7 @@ func runN(a *AStarSolver) (q *SearchNode, err error) {
 	}
 	for a.OpenNodesHeap.Size() > 0 {
 		node := a.OpenNodesHeap.DeleteMin()
-		state := decompute(node.(*SearchNode).EncodedState)
+		state := Decompute(node.(*SearchNode).EncodedState)
 		uuid := state.CreateUUID()
 
 		if *node.(*SearchNode).HeuristicCost == 0 {
@@ -52,7 +52,7 @@ func runN(a *AStarSolver) (q *SearchNode, err error) {
 }
 
 func move(action Action, state *Puzzle, aStar *AStarSolver, searchNode *SearchNode, results chan<- *SearchNode) {
-	tile := state.Zero.ToTile(state.Size)
+	tile := state.ZeroPosition.ToTile(state.Size)
 	size := state.Size
 	if tile.TestAction(action.Value, size) {
 		state.Move(action.Value)

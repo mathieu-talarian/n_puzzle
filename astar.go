@@ -45,8 +45,8 @@ func (solver *AStarSolver) IsSolvable() bool {
 	puzzleInversions := solver.Puzzle.Inversions()
 	goalInversions := solver.GoalPuzzle.Inversions()
 	if solver.Puzzle.Mod(2) == 0 {
-		puzzleInversions += solver.Puzzle.Zero.I / solver.Size
-		goalInversions += solver.GoalPuzzle.Zero.I / solver.Size
+		puzzleInversions += solver.Puzzle.ZeroPosition.Index / solver.Size
+		goalInversions += solver.GoalPuzzle.ZeroPosition.Index / solver.Size
 	}
 	return puzzleInversions%2 == goalInversions%2
 }

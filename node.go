@@ -20,7 +20,7 @@ func NewSearchNode(moveAction *string, pathCost uint, heuristicCost uint, parent
 		PathCost:      &pathCost,
 		HeuristicCost: &heuristicCost,
 		ParentNode:    parentNode,
-		EncodedState:  puzzleState.compute(),
+		EncodedState:  puzzleState.ComputeEncodedState(),
 	}
 }
 
@@ -51,7 +51,7 @@ func (node SearchNode) ExecuteSolver(solver *AStarSolver, nodeUUID TreeString, p
 
 func (node *SearchNode) PrintNodeDetails() {
 	fmt.Println("Move Action:", *node.MoveAction)
-	decompute(node.EncodedState).PrintPuzzle()
+	Decompute(node.EncodedState).PrintPuzzle()
 	fmt.Println("Heuristic Cost:", *node.HeuristicCost, "| Path Cost:", *node.PathCost)
 	fmt.Println()
 }
