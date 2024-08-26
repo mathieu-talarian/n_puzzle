@@ -26,7 +26,7 @@ func FindHeuristic(heuristicType uint) HeuristicFunction {
 	}
 }
 
-type CostFunction func(a, b *Node) int
+type CostFunction func(a, b *SearchNode) int
 
 const (
 	greedy = iota
@@ -49,29 +49,29 @@ func FindCostFunction(costType uint) CostFunction {
 
 func greedyCost() CostFunction {
 	fmt.Println("greedy cost")
-	return (func(nodeA, nodeB *Node) int {
-		return int(*nodeA.H - *nodeB.H)
-	})
+	return func(nodeA, nodeB *SearchNode) int {
+		return int(*nodeA.HeuristicCost - *nodeB.HeuristicCost)
+	}
 }
 
 func astarCost() CostFunction {
 	fmt.Println("astar cost")
-	return (func(nodeA, nodeB *Node) int {
-		return int(*nodeA.G+*nodeA.H) - int(*nodeB.G+*nodeB.H)
-	})
+	return func(nodeA, nodeB *SearchNode) int {
+		return int(*nodeA.PathCost+*nodeA.HeuristicCost) - int(*nodeB.PathCost+*nodeB.HeuristicCost)
+	}
 }
 
 func uniformCost() CostFunction {
 	fmt.Println("Uniform cost")
-	return (func(nodeA, nodeB *Node) int {
-		return int(*nodeA.G) - int(*nodeB.G)
-	})
+	return func(nodeA, nodeB *SearchNode) int {
+		return int(*nodeA.PathCost) - int(*nodeB.PathCost)
+	}
 }
 
 // Add on A the solv function depends on heuristic and fill Solution number
 func ManhattanHeuristic() HeuristicFunction {
 	fmt.Println("Manhattan")
-	return HeuristicFunction(func(board *Puzzle, final Puzzle) (result int, error error) {
+	return func(board *Puzzle, final Puzzle) (result int, error error) {
 		result = 0
 		for i := range board.Tiles {
 			currentTile := board.Tiles[i]
@@ -80,7 +80,7 @@ func ManhattanHeuristic() HeuristicFunction {
 			result += AbsoluteValue(currentTile.Y - finalTile.Y)
 		}
 		return
-	})
+	}
 }
 
 func VerticalConflict(current, final Tile) (conflicts int) {
@@ -103,7 +103,7 @@ func HorizontalConflict(current, final Tile) (conflicts int) {
 
 func LinearHeuristic() HeuristicFunction {
 	fmt.Println("Manhattan with linear conflicts")
-	return HeuristicFunction(func(board *Puzzle, final Puzzle) (result int, error error) {
+	return func(board *Puzzle, final Puzzle) (result int, error error) {
 		result = 0
 
 		for i := range board.Tiles {
@@ -121,17 +121,17 @@ func LinearHeuristic() HeuristicFunction {
 			}
 		}
 		return
-	})
+	}
 }
 
 func MisplacedHeuristic() HeuristicFunction {
 	fmt.Println("Misplaced Tiles")
-	return HeuristicFunction(func(board *Puzzle, final Puzzle) (result int, error error) {
+	return func(board *Puzzle, final Puzzle) (result int, error error) {
 		for i := range board.Tiles {
 			if board.Board[i] != final.Board[i] {
 				result++
 			}
 		}
 		return
-	})
+	}
 }

@@ -17,27 +17,27 @@ func Start(puzzle *Puzzle, heuristic uint) {
 	if node, err := runN(astar); err != nil {
 		log.Fatal(err)
 	} else {
-		node.PrintResult()
+		node.PrintSolutionPath()
 		fmt.Println("Number of turns:", astar.NumberOfTurns)
 		fmt.Println("Max state:", astar.MaxStatesReached)
 	}
 }
 
-func runN(a *AStarSolver) (q *Node, err error) {
+func runN(a *AStarSolver) (q *SearchNode, err error) {
 	if err = a.InitializeRootNode(); err != nil {
 		return
 	}
 	for a.OpenNodesHeap.Size() > 0 {
 		node := a.OpenNodesHeap.DeleteMin()
-		state := decompute(node.(*Node).State)
+		state := decompute(node.(*SearchNode).EncodedState)
 		uuid := state.CreateUUID()
 
-		if *node.(*Node).H == 0 {
-			return node.(*Node), nil
+		if *node.(*SearchNode).HeuristicCost == 0 {
+			return node.(*SearchNode), nil
 		}
 
 		(*a).NumberOfTurns++
-		node.(*Node).Execute(a, uuid, state)
+		node.(*SearchNode).ExecuteSolver(a, uuid, state)
 		num := a.OpenNodesHeap.Size()
 		if num > int(a.MaxStatesReached) {
 			a.MaxStatesReached = uint(num)
@@ -51,7 +51,7 @@ func runN(a *AStarSolver) (q *Node, err error) {
 	return
 }
 
-func move(action Action, state *Puzzle, aStar *AStarSolver, n *Node, results chan<- *Node) {
+func move(action Action, state *Puzzle, aStar *AStarSolver, searchNode *SearchNode, results chan<- *SearchNode) {
 	tile := state.Zero.ToTile(state.Size)
 	size := state.Size
 	if tile.TestAction(action.Value, size) {
@@ -60,20 +60,20 @@ func move(action Action, state *Puzzle, aStar *AStarSolver, n *Node, results cha
 		if err != nil {
 			log.Fatal(err)
 		}
-		results <- NewNode(&action.Name, *n.G+1, uint(h), n, state)
+		results <- NewSearchNode(&action.Name, *searchNode.HeuristicCost+1, uint(h), searchNode, state)
 	} else {
 		results <- nil
 	}
 }
 
-func add(newNode *Node, aStar *AStarSolver, uuid TreeString) {
+func add(newNode *SearchNode, aStar *AStarSolver, uuid TreeString) {
 	if newNode != nil {
-		if !newNode.AlreadyClosed(aStar.ClosedNodesTree, uuid) {
+		if !newNode.IsAlreadyClosed(aStar.ClosedNodesTree, uuid) {
 			aStar.OpenNodesHeap.Insert(newNode)
 		}
 	}
 }
 
-func worker(id <-chan int, puzzle *Puzzle, aStar *AStarSolver, n *Node, results chan<- *Node) {
+func worker(id <-chan int, puzzle *Puzzle, aStar *AStarSolver, n *SearchNode, results chan<- *SearchNode) {
 	move(ActionsList[<-id], puzzle, aStar, n, results)
 }

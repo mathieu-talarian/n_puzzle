@@ -31,7 +31,7 @@ func (solver *AStarSolver) InitializeRootNode() error {
 	if err != nil {
 		return err
 	}
-	solver.OpenNodesHeap.Insert(NewNode(
+	solver.OpenNodesHeap.Insert(NewSearchNode(
 		&ActionNone.Name,
 		0,
 		uint(heuristicValue),

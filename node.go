@@ -7,11 +7,11 @@ import (
 )
 
 type SearchNode struct {
-	MoveAction     *string
-	PathCost       *uint
-	HeuristicCost  *uint
-	ParentNode     *SearchNode
-	EncodedState   string
+	MoveAction    *string
+	PathCost      *uint
+	HeuristicCost *uint
+	ParentNode    *SearchNode
+	EncodedState  string
 }
 
 func NewSearchNode(moveAction *string, pathCost uint, heuristicCost uint, parentNode *SearchNode, puzzleState *Puzzle) *SearchNode {
@@ -45,7 +45,7 @@ func (node SearchNode) ExecuteSolver(solver *AStarSolver, nodeUUID TreeString, p
 		actionChannel <- action.Value
 	}
 	for range ActionsList {
-		addNodeToSolver(<-nodeChannel, solver, nodeUUID)
+		add(<-nodeChannel, solver, nodeUUID)
 	}
 }
 
