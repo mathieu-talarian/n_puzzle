@@ -47,7 +47,7 @@ func runN(a *AStarSolver) (q *SearchNode, err error) {
 	return
 }
 
-func move(action Action, state *Puzzle, aStar *AStarSolver, searchNode *SearchNode, results chan<- *SearchNode) {
+func move(action Action, state *Puzzle, aStar *AStarSolver, searchNode **SearchNode, results chan<- *SearchNode) {
 	tile := state.ZeroPosition.ToTile(state.Size)
 	size := state.Size
 	if tile.TestAction(action.Value, size) {
@@ -56,7 +56,7 @@ func move(action Action, state *Puzzle, aStar *AStarSolver, searchNode *SearchNo
 		if err != nil {
 			log.Fatal(err)
 		}
-		results <- NewSearchNode(&action.Name, *searchNode.HeuristicCost+1, uint(h), searchNode, state)
+		results <- NewSearchNode(&action.Name, *(*searchNode).HeuristicCost+1, uint(h), *searchNode, state)
 	} else {
 		results <- nil
 	}
@@ -71,5 +71,5 @@ func add(newNode *SearchNode, aStar *AStarSolver, uuid TreeString) {
 }
 
 func worker(id <-chan int, puzzle *Puzzle, aStar *AStarSolver, n *SearchNode, results chan<- *SearchNode) {
-	move(ActionsList[<-id], puzzle, aStar, n, results)
+	move(ActionsList[<-id], puzzle, aStar, &n, results)
 }
