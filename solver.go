@@ -66,7 +66,7 @@ func move(action Action, state *Puzzle, astar *Astar, n *Node, results chan<- *N
 	}
 }
 
-func add(newNode *Node, a *Astar, uuid BstString) {
+func add(newNode *Node, a *Astar, uuid TreeString) {
 	if newNode != nil {
 		if !newNode.AlreadyClosed(a.ClosedList, uuid) {
 			a.OpenList.Insert(newNode)

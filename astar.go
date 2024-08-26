@@ -8,7 +8,7 @@ type Astar struct {
 	*Puzzle
 	Goal       Puzzle
 	OpenList   *rankparing.RPHeap
-	ClosedList *Bst
+	ClosedList *BinarySearchTree
 	Turns      uint
 	MaxState   uint
 	HeuristicFunction

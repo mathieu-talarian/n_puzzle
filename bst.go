@@ -2,18 +2,16 @@ package main
 
 import "fmt"
 
-// Bst binary search tree struct
-type Bst struct {
-	Uuid  *BstString
-	Left  *Bst
-	Right *Bst
+type BinarySearchTree struct {
+	Uuid  *TreeString
+	Left  *BinarySearchTree
+	Right *BinarySearchTree
 }
 
-// BstString implements the Item interface
-type BstString string
+type TreeString string
 
 // Compare func compare BstString to Item of new BST
-func (a BstString) Compare(b BstString) int {
+func (a TreeString) Compare(b TreeString) int {
 	if a < b {
 		return -1
 	}
@@ -24,12 +22,12 @@ func (a BstString) Compare(b BstString) int {
 }
 
 // NewBst returns *BST
-func NewBst(uuid BstString) *Bst {
-	return &Bst{Uuid: &uuid}
+func NewBst(uuid TreeString) *BinarySearchTree {
+	return &BinarySearchTree{Uuid: &uuid}
 }
 
 // Insert new `Item` on BST
-func (n *Bst) Insert(data BstString) error {
+func (n *BinarySearchTree) Insert(data TreeString) error {
 	if n == nil {
 		return fmt.Errorf("cannot insert Value into a Nil tree")
 	}
@@ -54,7 +52,7 @@ func (n *Bst) Insert(data BstString) error {
 }
 
 // Find `Item` on BST returns nil, false if can't find item
-func (n *Bst) Find(data BstString) bool {
+func (n *BinarySearchTree) Find(data TreeString) bool {
 	if n == nil {
 		return false
 	}

@@ -207,8 +207,7 @@ func (p *Puzzle) Mod(i int) int {
 	return p.Size % i
 }
 
-// TileIndex is only an int
-type TileIndex struct {
+type TilePosition struct {
 	I int
 }
 
@@ -217,7 +216,7 @@ type Board []int
 
 // Puzzle struct
 type Puzzle struct {
-	Zero TileIndex
+	Zero TilePosition
 	Board
 	Size int
 	Tiles
@@ -244,7 +243,7 @@ func decompute(str string) *Puzzle {
 }
 
 // CreateUUID builds an uuid from a string
-func (p *Puzzle) CreateUUID() BstString {
+func (p *Puzzle) CreateUUID() TreeString {
 	b := p.Board
 	tab := make([]string, p.Size*p.Size)
 	for k, v := range b {
@@ -345,7 +344,7 @@ func (t *Tile) Right() bool {
 }
 
 // ToTile computes an intex to an x - y  value (tile)
-func (t *TileIndex) ToTile(s int) (y *Tile) {
+func (t *TilePosition) ToTile(s int) (y *Tile) {
 	return &Tile{t.I % s, t.I / s}
 }
 

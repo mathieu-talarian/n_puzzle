@@ -28,8 +28,8 @@ func (n *Node) Compare(than heap.Item) int {
 	return costFunction(n, than.(*Node))
 }
 
-func (n *Node) AlreadyClosed(closedList *Bst, uuid BstString) bool {
-	ok := closedList.Find(BstString(uuid))
+func (n *Node) AlreadyClosed(closedList *BinarySearchTree, uuid TreeString) bool {
+	ok := closedList.Find(TreeString(uuid))
 	return ok
 }
 

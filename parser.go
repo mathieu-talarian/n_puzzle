@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-type Datas struct {
+type PuzzleData struct {
 	Size  int
 	Board []int
 }
@@ -53,7 +53,7 @@ func ScanToList(text string, l *list.List) (*list.List, error) {
 	return l, nil
 }
 
-func (d *Datas) ListCheckSize(l *list.List) error {
+func (d *PuzzleData) ListCheckSize(l *list.List) error {
 	if l.Len() != 1 {
 		return errors.New("issue with puzzle size")
 	} else if s, err := strconv.Atoi(l.Front().Value.(string)); s <= 2 && err == nil {
@@ -70,8 +70,8 @@ func (d *Datas) ListCheckSize(l *list.List) error {
 	return nil
 }
 
-func DataFromList(l *list.List) (d *Datas, err error) {
-	d = new(Datas)
+func DataFromList(l *list.List) (d *PuzzleData, err error) {
+	d = new(PuzzleData)
 	i := -1
 	cpt := 0
 	for e := l.Front(); e != nil; e = e.Next() {
