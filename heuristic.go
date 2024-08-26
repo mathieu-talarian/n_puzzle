@@ -2,7 +2,11 @@ package main
 
 import (
 	"fmt"
+	"sync"
 )
+
+var heuristicCache = make(map[string]int)
+var cacheMutex = &sync.Mutex{}
 
 type HeuristicFunction func(board *Puzzle, dt Puzzle) (ret int, err error)
 
@@ -71,6 +75,14 @@ func uniformCost() CostFunction {
 func ManhattanHeuristic() HeuristicFunction {
 	fmt.Println("Manhattan")
 	return func(board *Puzzle, final Puzzle) (result int, error error) {
+		cacheKey := board.ComputeEncodedState()
+		cacheMutex.Lock()
+		if cachedResult, found := heuristicCache[cacheKey]; found {
+			cacheMutex.Unlock()
+			return cachedResult, nil
+		}
+		cacheMutex.Unlock()
+
 		result = 0
 		for i := range board.Tiles {
 			currentTile := board.Tiles[i]
@@ -80,7 +92,10 @@ func ManhattanHeuristic() HeuristicFunction {
 				result += AbsoluteValue(currentTile.Y - finalTile.Y)
 			}
 		}
-		return
+		cacheMutex.Lock()
+		heuristicCache[cacheKey] = result
+		cacheMutex.Unlock()
+		return result, nil
 	}
 }
 
