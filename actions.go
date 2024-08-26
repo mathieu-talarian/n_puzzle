@@ -4,7 +4,7 @@ const ( // actions
 	// Top action
 	ActionTop = iota
 
-	//Bot action
+	// Bot action
 	ActionBot
 
 	//Left action
@@ -20,7 +20,7 @@ type Action struct {
 	Value int
 }
 
-// None for no action -> first turn
+/* None for no action, used for the first turn */
 var ActionNone = Action{
 	"None",
 	-1,
