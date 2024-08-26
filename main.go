@@ -20,23 +20,23 @@ import (
 )
 
 func main() {
-	var p *Puzzle
-	f, err := Parse()
+	var puzzle *Puzzle
+	flags, err := Parse()
 	if err != nil {
 		log.Fatal(err)
 	}
 	if len(f.Args) == 0 {
-		p, err = Generate()
+		puzzle, err = Generate()
 		if err != nil {
 			log.Fatal(err)
 		}
 	} else {
-		p, err = File(f.Args)
+		puzzle, err = File(flags.Args)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
-	Start(p, f.Heuristic-1, f.Cost)
+	Start(puzzle, flags.Heuristic-1, flags.Cost)
 }
 
 type Flags struct {
@@ -48,7 +48,7 @@ type Flags struct {
 	Heuristic  uint
 }
 
-var t = [2]bool{
+var solvabilityOptions = [2]bool{
 	true,
 	false,
 }
@@ -68,7 +68,7 @@ func computeSolv(f *bool, solv, unsolv bool) (err error) {
 		if err != nil {
 			return err
 		}
-		*f = t[r.Int64()]
+		*f = solvabilityOptions[r.Int64()]
 	}
 	return nil
 }

@@ -8,18 +8,18 @@ import (
 var costFunction CostFunction
 
 // Start function init astar
-func Start(p *Puzzle, h uint, c uint) {
-	a := NewAstar(p, h, c)
+func Start(puzzle *Puzzle, heuristic uint, cost uint) {
+	astar := NewAstar(puzzle, heuristic, cost)
 	costFunction = FindCostFunction(c)
-	if !a.CheckSolvability() {
+	if !astar.CheckSolvability() {
 		log.Fatal("This puzzle is unsolvable")
 	}
-	if n, err := runN(a); err != nil {
+	if node, err := runN(astar); err != nil {
 		log.Fatal(err)
 	} else {
-		n.PrintResult()
-		fmt.Println("Number of turns:", a.Turns)
-		fmt.Println("Max state:", a.MaxState)
+		node.PrintResult()
+		fmt.Println("Number of turns:", astar.Turns)
+		fmt.Println("Max state:", astar.MaxState)
 	}
 }
 

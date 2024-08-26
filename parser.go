@@ -28,7 +28,7 @@ type Datas struct {
 }
 
 func File(av []string) (puzzle *Puzzle, err error) {
-	l := list.New()
+	lineList := list.New()
 	if len(av) > 1 {
 		return nil, errors.New("too much arguments")
 	}
@@ -38,20 +38,20 @@ func File(av []string) (puzzle *Puzzle, err error) {
 	}
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		l.Init()
-		newList, err := ScanToList(scanner.Text(), l)
+		lineList.Init()
+		newList, err := ScanToList(scanner.Text(), lineList)
 		if err == nil && newList != nil && newList.Len() != 0 {
-			l.PushBack(newList)
+			lineList.PushBack(newList)
 		}
 	}
-	d, err := DataFromList(l)
+	data, err := DataFromList(lineList)
 	if err != nil {
 		return nil, err
 	}
-	if len(d.Board) == 0 {
+	if len(data.Board) == 0 {
 		return nil, fmt.Errorf("issue with input")
 	}
-	return PuzzleFromDatas(d.Size, d.Board)
+	return PuzzleFromDatas(data.Size, data.Board)
 }
 
 func ScanToList(text string, l *list.List) (*list.List, error) {
