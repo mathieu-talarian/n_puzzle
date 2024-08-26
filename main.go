@@ -3,11 +3,17 @@ package main
 import (
 	"crypto/rand"
 	"flag"
+	_ "net/http/pprof"
 	"log"
+	"net/http"
 	"math/big"
 )
 
 func main() {
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
+
 	var puzzleInstance *Puzzle
 	commandLineFlags, err := ParseCommandLineFlags()
 	if err != nil {
