@@ -7,7 +7,7 @@ import (
 
 var costFunction CostFunction
 
-// Start function init astar
+/* Start initializes the A* solver and begins the solving process */
 func Start(puzzle *Puzzle, heuristic uint) {
 	astar := NewAStarSolver(puzzle, heuristic)
 	costFunction = FindCostFunction(heuristic)
