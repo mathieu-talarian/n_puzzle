@@ -8,7 +8,7 @@ type AStarSolver struct {
 	*Puzzle
 	GoalPuzzle       Puzzle
 	OpenNodesHeap    *rankparing.RPHeap
-	ClosedNodesTree  *BinarySearchTree
+	ClosedNodesMap   map[TreeString]struct{}
 	NumberOfTurns    uint
 	MaxStatesReached uint
 	HeuristicFunc    HeuristicFunction
@@ -19,7 +19,7 @@ func NewAStarSolver(puzzle *Puzzle, heuristicType uint) *AStarSolver {
 		Puzzle:           puzzle,
 		GoalPuzzle:       Goal(puzzle.Size),
 		OpenNodesHeap:    rankparing.New().Init(),
-		ClosedNodesTree:  nil,
+		ClosedNodesMap:   make(map[TreeString]struct{}),
 		HeuristicFunc:    FindHeuristic(heuristicType),
 		NumberOfTurns:    0,
 		MaxStatesReached: 0,

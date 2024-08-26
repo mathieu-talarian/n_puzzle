@@ -64,7 +64,7 @@ func move(action Action, state *Puzzle, aStar *AStarSolver, searchNode *SearchNo
 
 func add(newNode *SearchNode, aStar *AStarSolver, uuid TreeString) {
 	if newNode != nil {
-		if !newNode.IsAlreadyClosed(aStar.ClosedNodesTree, uuid) {
+		if !newNode.IsAlreadyClosed(aStar.ClosedNodesMap, uuid) {
 			aStar.OpenNodesHeap.Insert(newNode)
 		}
 	}
