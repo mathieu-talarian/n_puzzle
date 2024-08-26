@@ -53,10 +53,10 @@ func ParseLineToList(line string, list *list.List) (*list.List, error) {
 	return list, nil
 }
 
-func (puzzleData *PuzzleConfiguration) ValidateListSize(list *list.List) error {
-	if list.Len() != 1 {
+func (puzzleData *PuzzleConfiguration) ValidateListSize(currentList *list.List) error {
+	if currentList.Len() != 1 {
 		return errors.New("issue with puzzle size")
-	} else if size, err := strconv.Atoi(list.Front().Value.(string)); size <= 2 && err == nil {
+	} else if size, err := strconv.Atoi(currentList.Front().Value.(string)); size <= 2 && err == nil {
 		return errors.New(fmt.Sprintln("Size too short or negative : ", size))
 	} else if err != nil {
 		return err
@@ -70,17 +70,17 @@ func (puzzleData *PuzzleConfiguration) ValidateListSize(list *list.List) error {
 	return nil
 }
 
-func ExtractDataFromList(list *list.List) (puzzleData *PuzzleConfiguration, err error) {
+func ExtractDataFromList(currentList *list.List) (puzzleData *PuzzleConfiguration, err error) {
 	puzzleData = new(PuzzleConfiguration)
 	index := -1
 	count := 0
-	for element := list.Front(); element != nil; element = element.Next() {
+	for element := currentList.Front(); element != nil; element = element.Next() {
 		if index == -1 {
 			if err = puzzleData.ValidateListSize(element.Value.(*list.List)); err != nil {
 				return
 			}
 		} else {
-			if list.Len()-1 > puzzleData.PuzzleSize {
+			if currentList.Len()-1 > puzzleData.PuzzleSize {
 				return nil, errors.New("too much lanes for board")
 			}
 			if element.Value.(*list.List).Len() != puzzleData.PuzzleSize {
