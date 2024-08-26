@@ -249,7 +249,7 @@ func (p *Puzzle) CreateUUID() TreeString {
 	for k, v := range b {
 		tab[k] = strconv.Itoa(v)
 	}
-	return BstString(strings.Join(tab, "|"))
+	return TreeString(strings.Join(tab, "|"))
 }
 
 // Copy deep copy board to board
