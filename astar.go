@@ -34,7 +34,7 @@ func (astar *Astar) RootNode() error {
 	astar.OpenList.Insert(NewNode(
 		&ActionNone.Name,
 		0,
-		uint(h),
+		uint(heuristic),
 		nil,
 		astar.Puzzle))
 	return nil
