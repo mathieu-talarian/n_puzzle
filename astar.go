@@ -4,49 +4,49 @@ import (
 	rankparing "github.com/theodesp/go-heaps/rank_pairing"
 )
 
-type Astar struct {
+type AStarSolver struct {
 	*Puzzle
-	Goal       Puzzle
-	OpenList   *rankparing.RPHeap
-	ClosedList *BinarySearchTree
-	Turns      uint
-	MaxState   uint
-	HeuristicFunction
+	GoalPuzzle       Puzzle
+	OpenNodesHeap    *rankparing.RPHeap
+	ClosedNodesTree  *BinarySearchTree
+	NumberOfTurns    uint
+	MaxStatesReached uint
+	HeuristicFunc    HeuristicFunction
 }
 
-func NewAstar(puzzle *Puzzle, heuristic uint) *Astar {
-	return &Astar{
+func NewAStarSolver(puzzle *Puzzle, heuristicType uint) *AStarSolver {
+	return &AStarSolver{
 		Puzzle:            puzzle,
-		Goal:              Goal(puzzle.Size),
-		OpenList:          rankparing.New().Init(),
-		ClosedList:        nil,
-		HeuristicFunction: FindHeuristic(heuristic),
-		Turns:             0,
-		MaxState:          0,
+		GoalPuzzle:        Goal(puzzle.Size),
+		OpenNodesHeap:     rankparing.New().Init(),
+		ClosedNodesTree:   nil,
+		HeuristicFunc:     FindHeuristic(heuristicType),
+		NumberOfTurns:     0,
+		MaxStatesReached:  0,
 	}
 }
 
-func (astar *Astar) RootNode() error {
-	heuristic, err := astar.HeuristicFunction(astar.Puzzle, astar.Goal)
+func (solver *AStarSolver) InitializeRootNode() error {
+	heuristicValue, err := solver.HeuristicFunc(solver.Puzzle, solver.GoalPuzzle)
 	if err != nil {
 		return err
 	}
-	astar.OpenList.Insert(NewNode(
+	solver.OpenNodesHeap.Insert(NewNode(
 		&ActionNone.Name,
 		0,
-		uint(heuristic),
+		uint(heuristicValue),
 		nil,
-		astar.Puzzle))
+		solver.Puzzle))
 	return nil
 }
 
-func (astar *Astar) CheckSolvability() bool {
-	astar.Puzzle.PrintPuzzle()
-	puzzleInversions := astar.Puzzle.Inversions()
-	goalInversions := astar.Goal.Inversions()
-	if astar.Puzzle.Mod(2) == 0 {
-		puzzleInversions += astar.Puzzle.Zero.I / astar.Size
-		goalInversions += astar.Goal.Zero.I / astar.Size
+func (solver *AStarSolver) IsSolvable() bool {
+	solver.Puzzle.PrintPuzzle()
+	puzzleInversions := solver.Puzzle.Inversions()
+	goalInversions := solver.GoalPuzzle.Inversions()
+	if solver.Puzzle.Mod(2) == 0 {
+		puzzleInversions += solver.Puzzle.ZeroPosition.Index / solver.Size
+		goalInversions += solver.GoalPuzzle.ZeroPosition.Index / solver.Size
 	}
 	return puzzleInversions%2 == goalInversions%2
 }
