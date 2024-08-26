@@ -33,7 +33,7 @@ func (node *SearchNode) IsAlreadyClosed(closedNodesMap map[TreeString]struct{}, 
 	return isFound
 }
 
-func (node SearchNode) ExecuteSolver(solver *AStarSolver, nodeUUID TreeString, puzzleState *Puzzle) {
+func (node *SearchNode) ExecuteSolver(solver *AStarSolver, nodeUUID TreeString, puzzleState *Puzzle) {
 	actionChannel := make(chan int, len(ActionsList))
 	nodeChannel := make(chan *SearchNode, len(ActionsList))
 	defer close(actionChannel)
