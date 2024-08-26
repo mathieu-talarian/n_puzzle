@@ -142,7 +142,7 @@ func (p *Puzzle) zeroIndex() (err error) {
 
 // Generate function
 func Generate() (p *Puzzle, err error) {
-	f := Get()
+	f := GetGlobalFlags()
 	p = initPuzzle(f.Size)
 	if err = p.makePuzzle(f.Solvable, f.Iterations); err != nil {
 		return

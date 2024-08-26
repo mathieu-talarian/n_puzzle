@@ -10,7 +10,6 @@ const (
 	Manhattan = iota
 	Linear
 	Misplaced
-	Pattern
 )
 
 func FindHeuristic(heuristicType uint) HeuristicFunction {
@@ -77,8 +76,8 @@ func ManhattanHeuristic() HeuristicFunction {
 		for i := range board.Tiles {
 			currentTile := board.Tiles[i]
 			finalTile := final.Tiles[i]
-			result += Abs(currentTile.X - finalTile.X)
-			result += Abs(currentTile.Y - finalTile.Y)
+			result += AbsoluteValue(currentTile.X - finalTile.X)
+			result += AbsoluteValue(currentTile.Y - finalTile.Y)
 		}
 		return
 	})
@@ -87,7 +86,7 @@ func ManhattanHeuristic() HeuristicFunction {
 func VerticalConflict(current, final Tile) (conflicts int) {
 	if current.Y == final.Y {
 		if current.X != final.X {
-			conflicts += Abs(current.X - final.X)
+			conflicts += AbsoluteValue(current.X - final.X)
 		}
 	}
 	return conflicts * 2
@@ -96,7 +95,7 @@ func VerticalConflict(current, final Tile) (conflicts int) {
 func HorizontalConflict(current, final Tile) (conflicts int) {
 	if current.X == final.X {
 		if current.Y != final.Y {
-			conflicts += Abs(current.Y - final.Y)
+			conflicts += AbsoluteValue(current.Y - final.Y)
 		}
 	}
 	return conflicts * 2
@@ -111,12 +110,12 @@ func LinearHeuristic() HeuristicFunction {
 			currentTile := board.Tiles[i]
 			finalTile := final.Tiles[i]
 			if currentTile.X != finalTile.X {
-				result += Abs(currentTile.X - finalTile.X)
+				result += AbsoluteValue(currentTile.X - finalTile.X)
 			} else {
 				result += HorizontalConflict(currentTile, finalTile)
 			}
 			if currentTile.Y != finalTile.Y {
-				result += Abs(currentTile.Y - finalTile.Y)
+				result += AbsoluteValue(currentTile.Y - finalTile.Y)
 			} else {
 				result += VerticalConflict(currentTile, finalTile)
 			}
