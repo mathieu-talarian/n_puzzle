@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sync"
 
 	heap "github.com/theodesp/go-heaps"
 )
@@ -34,15 +35,20 @@ func (node *SearchNode) IsAlreadyClosed(closedNodesMap map[TreeString]struct{}, 
 }
 
 func (node *SearchNode) ExecuteSolver(solver *AStarSolver, nodeUUID TreeString, puzzleState *Puzzle) {
-	actionChannel := make(chan int, len(ActionsList))
+	var wg sync.WaitGroup
 	nodeChannel := make(chan *SearchNode, len(ActionsList))
-	defer close(actionChannel)
 	defer close(nodeChannel)
+
 	for _, action := range ActionsList {
+		wg.Add(1)
 		go func(action Action) {
+			defer wg.Done()
 			move(action, puzzleState.Copy(), solver, &node, nodeChannel)
 		}(action)
 	}
+
+	wg.Wait()
+
 	for range ActionsList {
 		add(<-nodeChannel, solver, nodeUUID)
 	}
