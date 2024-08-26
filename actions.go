@@ -2,16 +2,16 @@ package main
 
 const ( // actions
 	// Top action
-	Top = iota
+	ActionTop = iota
 
 	//Bot action
-	Bot
+	ActionBot
 
 	//Left action
-	Left
+	ActionLeft
 
 	// Right action
-	Right
+	ActionRight
 )
 
 // Action Struct link enum action to name : string
@@ -21,13 +21,13 @@ type Action struct {
 }
 
 // None for no action -> first turn
-var None = Action{
+var ActionNone = Action{
 	"None",
 	-1,
 }
 
 // L array of actions
-var L = [4]Action{
+var ActionsList = [4]Action{
 	{
 		"Top",
 		Top,
