@@ -40,11 +40,11 @@ func FindCostFunction(costType uint) CostFunction {
 	case greedy:
 		return greedyCost()
 	case aStar:
-		return astarCost()
+		return aStarCost()
 	case uniform:
 		return uniformCost()
 	}
-	return astarCost()
+	return aStarCost()
 }
 
 func greedyCost() CostFunction {
@@ -54,7 +54,7 @@ func greedyCost() CostFunction {
 	}
 }
 
-func astarCost() CostFunction {
+func aStarCost() CostFunction {
 	fmt.Println("astar cost")
 	return func(nodeA, nodeB *SearchNode) int {
 		return int(*nodeA.PathCost+*nodeA.HeuristicCost) - int(*nodeB.PathCost+*nodeB.HeuristicCost)
@@ -68,7 +68,6 @@ func uniformCost() CostFunction {
 	}
 }
 
-// Add on A the solv function depends on heuristic and fill Solution number
 func ManhattanHeuristic() HeuristicFunction {
 	fmt.Println("Manhattan")
 	return func(board *Puzzle, final Puzzle) (result int, error error) {

@@ -1,16 +1,12 @@
 package main
 
 const ( // actions
-	// Top action
 	ActionTop = iota
 
-	// Bot action
 	ActionBot
 
-	//Left action
 	ActionLeft
 
-	// Right action
 	ActionRight
 )
 
@@ -20,13 +16,11 @@ type Action struct {
 	Value int
 }
 
-/* None for no action, used for the first turn */
 var ActionNone = Action{
 	"None",
 	-1,
 }
 
-// L array of actions
 var ActionsList = [4]Action{
 	{
 		"Top",

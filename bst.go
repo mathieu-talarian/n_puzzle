@@ -21,11 +21,6 @@ func (treeStringA TreeString) Compare(treeStringB TreeString) int {
 	return 0
 }
 
-// NewBst returns *BST
-func NewBst(uuid TreeString) *BinarySearchTree {
-	return &BinarySearchTree{Uuid: &uuid}
-}
-
 // Insert new `Item` on BST
 func (node *BinarySearchTree) Insert(newData TreeString) error {
 	if node == nil {
@@ -51,7 +46,7 @@ func (node *BinarySearchTree) Insert(newData TreeString) error {
 	return nil
 }
 
-// Find `Item` on BST returns nil, false if can't find item
+// Find `Item` on BST returns nil, false if you can't find item
 func (node *BinarySearchTree) Find(newData TreeString) bool {
 	if node == nil {
 		return false

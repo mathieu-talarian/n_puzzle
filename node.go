@@ -29,7 +29,7 @@ func (node *SearchNode) Compare(otherNode heap.Item) int {
 }
 
 func (node *SearchNode) IsAlreadyClosed(closedNodesMap map[TreeString]struct{}, nodeUUID TreeString) bool {
-	_, isFound := closedNodesMap[TreeString(nodeUUID)]
+	_, isFound := closedNodesMap[nodeUUID]
 	return isFound
 }
 

@@ -61,7 +61,6 @@ func computeSolv(solvableFlag *bool, solv, unsolv bool) (err error) {
 	return nil
 }
 
-/* ParseCommandLineFlags parses command line flags and returns them */
 func ParseCommandLineFlags() (flags Flags, err error) {
 
 	var unsolv bool
@@ -91,7 +90,6 @@ func ParseCommandLineFlags() (flags Flags, err error) {
 	return
 }
 
-// Get flags
 func GetGlobalFlags() Flags {
 	return global
 }
