@@ -2,9 +2,9 @@ package main
 
 import "golang.org/x/exp/constraints"
 
-func Abs[T constraints.Integer](x T) T {
-	if x < 0 {
-		return -x
+func Abs[T constraints.Integer](value T) T {
+	if value < 0 {
+		return -value
 	}
-	return x
+	return value
 }
