@@ -94,21 +94,21 @@ func (puzzle *Puzzle) SwapEmptyTile() (err error) {
 		log.Fatal(err)
 	}
 	possibleMoves := make([]int, 0)
-	if (puzzle.ZeroPosition.Index % puzzle.Size) > 0 {
+	if InBounds(puzzle.ZeroPosition.Index%puzzle.Size-1, puzzle.Size) {
 		possibleMoves = append(possibleMoves, puzzle.ZeroPosition.Index-1)
 	}
-	if (puzzle.ZeroPosition.Index % puzzle.Size) < (puzzle.Size - 1) {
+	if InBounds(puzzle.ZeroPosition.Index%puzzle.Size+1, puzzle.Size) {
 		possibleMoves = append(possibleMoves, puzzle.ZeroPosition.Index+1)
 	}
-	if (puzzle.ZeroPosition.Index / puzzle.Size) > 0 {
+	if InBounds(puzzle.ZeroPosition.Index/puzzle.Size-1, puzzle.Size) {
 		possibleMoves = append(possibleMoves, puzzle.ZeroPosition.Index-puzzle.Size)
 	}
-	if (puzzle.ZeroPosition.Index / puzzle.Size) < (puzzle.Size - 1) {
+	if InBounds(puzzle.ZeroPosition.Index/puzzle.Size+1, puzzle.Size) {
 		possibleMoves = append(possibleMoves, puzzle.ZeroPosition.Index+puzzle.Size)
 	}
 	randomIndex, _ := rand.Int(rand.Reader, big.NewInt(int64(len(possibleMoves))))
 	swapIndex := possibleMoves[randomIndex.Int64()]
-	puzzle.Board[puzzle.ZeroPosition.Index], puzzle.Board[swapIndex] = puzzle.Board[swapIndex], 0
+	Swap(puzzle.Board, puzzle.ZeroPosition.Index, swapIndex)
 	return nil
 }
 
@@ -285,7 +285,7 @@ func (puzzle *Puzzle) PrintPuzzle() {
 			if board[x+y*puzzle.Size] == 0 {
 				color.New(color.FgRed).Printf("|%*d| ", padding, board[x+y*puzzle.Size])
 			} else {
-				fmt.Printf("|%*d| ", padding, board[x+y*puzzle.Size])
+				PrintFormattedPuzzle(board, puzzle.Size)
 			}
 		}
 		fmt.Printf("\n")
