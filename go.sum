@@ -15,6 +15,8 @@ github.com/mattn/go-isatty v0.0.4/go.mod h1:M+lRXTBqGeGNdLjl/ufCoiOlB5xdOkqRJdNx
 github.com/mattn/go-isatty v0.0.16/go.mod h1:kYGgaQfpe5nmfYZH+SKPsOc2e4SrIfOl2e/yFXSvRLM=
 github.com/mattn/go-isatty v0.0.20 h1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWEY=
 github.com/mattn/go-isatty v0.0.20/go.mod h1:W+V8PltTTMOvKvAeJH7IuucS94S2C6jfK/D7dTCTo3Y=
+github.com/starwander/GoFibonacciHeap v0.0.0-20190508061137-ba2e4f01000a h1:HxQEVn2dC2DyalPmsBVsTRsB05UpBmbgZV2a939iEwE=
+github.com/starwander/GoFibonacciHeap v0.0.0-20190508061137-ba2e4f01000a/go.mod h1:0UZshEHv45sVxpYdRE55cbIVuvbXD3+liaXyrgm1Mr4=
 github.com/theodesp/go-heaps v0.0.0-20181017084147-cb91ced45087 h1:qGocnoWFerK73EOau5zfyu6WWvGx1Aydz9BuN8DECaE=
 github.com/theodesp/go-heaps v0.0.0-20181017084147-cb91ced45087/go.mod h1:/sfW47zCZp9FrtGcWyo1VjbgDaodxX9ovZvgLb/MxaA=
 github.com/theodesp/go-heaps v0.0.0-20190520121037-88e35354fe0a h1:YuO+afVc3eqrjiCUizNCxI53bl/BnPiVwXqLzqYTqgU=

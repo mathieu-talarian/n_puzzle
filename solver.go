@@ -26,8 +26,8 @@ func runN(a *AStarSolver) (q *SearchNode, err error) {
 	if err = a.InitializeRootNode(); err != nil {
 		return
 	}
-	for a.OpenNodesHeap.Size() > 0 {
-		node := a.OpenNodesHeap.DeleteMin()
+	for a.OpenNodesHeap.Num() > 0 {
+		node := a.OpenNodesHeap.ExtractMinValue()
 		state := Decompute(node.(*SearchNode).EncodedState)
 		uuid := state.CreateUUID()
 
@@ -37,9 +37,9 @@ func runN(a *AStarSolver) (q *SearchNode, err error) {
 
 		(*a).NumberOfTurns++
 		node.(*SearchNode).ExecuteSolver(a, uuid, state)
-		num := a.OpenNodesHeap.Size()
-		if num > int(a.MaxStatesReached) {
-			a.MaxStatesReached = uint(num)
+		num := a.OpenNodesHeap.Num()
+		if num > a.MaxStatesReached {
+			a.MaxStatesReached = num
 		}
 		a.ClosedNodesMap[uuid] = struct{}{}
 	}
@@ -64,7 +64,7 @@ func move(action Action, state *Puzzle, aStar *AStarSolver, searchNode **SearchN
 func add(newNode *SearchNode, aStar *AStarSolver, uuid TreeString) {
 	if newNode != nil {
 		if !newNode.IsAlreadyClosed(aStar.ClosedNodesMap, uuid) {
-			aStar.OpenNodesHeap.Insert(newNode)
+			aStar.OpenNodesHeap.InsertValue(newNode)
 		}
 	}
 }

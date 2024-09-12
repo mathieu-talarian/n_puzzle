@@ -1,13 +1,13 @@
 package main
 
 import (
-	rankparing "github.com/theodesp/go-heaps/rank_pairing"
+	fibonacci "github.com/starwander/GoFibonacciHeap"
 )
 
 type AStarSolver struct {
 	*Puzzle
 	GoalPuzzle       Puzzle
-	OpenNodesHeap    *rankparing.RPHeap
+	OpenNodesHeap    fibonacci.FibHeap
 	ClosedNodesMap   map[TreeString]struct{}
 	NumberOfTurns    uint
 	MaxStatesReached uint
@@ -18,7 +18,7 @@ func NewAStarSolver(puzzle *Puzzle, heuristicType uint) *AStarSolver {
 	return &AStarSolver{
 		Puzzle:           puzzle,
 		GoalPuzzle:       Goal(puzzle.Size),
-		OpenNodesHeap:    rankparing.New().Init(),
+		OpenNodesHeap:    *fibonacci.NewFibHeap(),
 		ClosedNodesMap:   make(map[TreeString]struct{}),
 		HeuristicFunc:    FindHeuristic(heuristicType),
 		NumberOfTurns:    0,
@@ -31,12 +31,14 @@ func (solver *AStarSolver) InitializeRootNode() error {
 	if err != nil {
 		return err
 	}
-	solver.OpenNodesHeap.Insert(NewSearchNode(
+	if err = solver.OpenNodesHeap.InsertValue(NewSearchNode(
 		&ActionNone.Name,
 		0,
 		uint(heuristicValue),
 		nil,
-		solver.Puzzle))
+		solver.Puzzle)); err != nil {
+		return err
+	}
 	return nil
 }
 

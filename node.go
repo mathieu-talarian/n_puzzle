@@ -15,6 +15,14 @@ type SearchNode struct {
 	EncodedState  string
 }
 
+func (node *SearchNode) Tag() interface{} {
+	return node.EncodedState
+}
+
+func (node *SearchNode) Key() float64 {
+	return float64(*node.HeuristicCost)
+}
+
 func NewSearchNode(moveAction *string, pathCost uint, heuristicCost uint, parentNode *SearchNode, puzzleState *Puzzle) *SearchNode {
 	return &SearchNode{
 		MoveAction:    moveAction,
