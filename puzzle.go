@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"log"
 	"math/big"
+	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/fatih/color"
 )
@@ -163,9 +165,31 @@ func GetTilePosition(size int, position int) (tile Tile) {
 
 // UpdateTilePositions updates every puzzle tile position
 func (puzzle *Puzzle) UpdateTilePositions() {
-	for i := 0; i < puzzle.Size*puzzle.Size; i++ {
-		puzzle.Tiles[puzzle.Board[i]] = GetTilePosition(puzzle.Size, i)
+	total := puzzle.Size * puzzle.Size
+	workers := runtime.NumCPU()
+	if workers > total {
+		workers = total
 	}
+	var wg sync.WaitGroup
+	chunk := (total + workers - 1) / workers
+	for w := 0; w < workers; w++ {
+		start := w * chunk
+		end := start + chunk
+		if end > total {
+			end = total
+		}
+		if start >= end {
+			continue
+		}
+		wg.Add(1)
+		go func(s, e int) {
+			defer wg.Done()
+			for i := s; i < e; i++ {
+				puzzle.Tiles[puzzle.Board[i]] = GetTilePosition(puzzle.Size, i)
+			}
+		}(start, end)
+	}
+	wg.Wait()
 }
 
 // Goal returns a Puzzle and create goal puzzle

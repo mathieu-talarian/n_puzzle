@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"runtime"
+	"sync"
 )
 
 type HeuristicFunction func(board *Puzzle, dt Puzzle) (ret int, err error)
@@ -71,14 +73,42 @@ func uniformCost() CostFunction {
 func ManhattanHeuristic() HeuristicFunction {
 	fmt.Println("Manhattan")
 	return func(board *Puzzle, final Puzzle) (result int, error error) {
-		result = 0
-		for i := range board.Tiles {
-			currentTile := board.Tiles[i]
-			finalTile := final.Tiles[i]
-			if currentTile != finalTile {
-				result += AbsoluteValue(currentTile.X - finalTile.X)
-				result += AbsoluteValue(currentTile.Y - finalTile.Y)
+		total := len(board.Tiles)
+		workers := runtime.NumCPU()
+		if workers > total {
+			workers = total
+		}
+		results := make(chan int, workers)
+		var wg sync.WaitGroup
+		chunk := (total + workers - 1) / workers
+		for w := 0; w < workers; w++ {
+			start := w * chunk
+			end := start + chunk
+			if end > total {
+				end = total
 			}
+			if start >= end {
+				continue
+			}
+			wg.Add(1)
+			go func(s, e int) {
+				defer wg.Done()
+				local := 0
+				for i := s; i < e; i++ {
+					currentTile := board.Tiles[i]
+					finalTile := final.Tiles[i]
+					if currentTile != finalTile {
+						local += AbsoluteValue(currentTile.X - finalTile.X)
+						local += AbsoluteValue(currentTile.Y - finalTile.Y)
+					}
+				}
+				results <- local
+			}(start, end)
+		}
+		wg.Wait()
+		close(results)
+		for v := range results {
+			result += v
 		}
 		return
 	}
@@ -105,21 +135,48 @@ func HorizontalConflict(current, final Tile) (conflicts int) {
 func LinearHeuristic() HeuristicFunction {
 	fmt.Println("Manhattan with linear conflicts")
 	return func(board *Puzzle, final Puzzle) (result int, error error) {
-		result = 0
-
-		for i := range board.Tiles {
-			currentTile := board.Tiles[i]
-			finalTile := final.Tiles[i]
-			if currentTile.X != finalTile.X {
-				result += AbsoluteValue(currentTile.X - finalTile.X)
-			} else {
-				result += HorizontalConflict(currentTile, finalTile)
+		total := len(board.Tiles)
+		workers := runtime.NumCPU()
+		if workers > total {
+			workers = total
+		}
+		results := make(chan int, workers)
+		var wg sync.WaitGroup
+		chunk := (total + workers - 1) / workers
+		for w := 0; w < workers; w++ {
+			start := w * chunk
+			end := start + chunk
+			if end > total {
+				end = total
 			}
-			if currentTile.Y != finalTile.Y {
-				result += AbsoluteValue(currentTile.Y - finalTile.Y)
-			} else {
-				result += VerticalConflict(currentTile, finalTile)
+			if start >= end {
+				continue
 			}
+			wg.Add(1)
+			go func(s, e int) {
+				defer wg.Done()
+				local := 0
+				for i := s; i < e; i++ {
+					currentTile := board.Tiles[i]
+					finalTile := final.Tiles[i]
+					if currentTile.X != finalTile.X {
+						local += AbsoluteValue(currentTile.X - finalTile.X)
+					} else {
+						local += HorizontalConflict(currentTile, finalTile)
+					}
+					if currentTile.Y != finalTile.Y {
+						local += AbsoluteValue(currentTile.Y - finalTile.Y)
+					} else {
+						local += VerticalConflict(currentTile, finalTile)
+					}
+				}
+				results <- local
+			}(start, end)
+		}
+		wg.Wait()
+		close(results)
+		for v := range results {
+			result += v
 		}
 		return
 	}
@@ -128,10 +185,39 @@ func LinearHeuristic() HeuristicFunction {
 func MisplacedHeuristic() HeuristicFunction {
 	fmt.Println("Misplaced Tiles")
 	return func(board *Puzzle, final Puzzle) (result int, error error) {
-		for i := range board.Tiles {
-			if board.Board[i] != final.Board[i] {
-				result++
+		total := len(board.Tiles)
+		workers := runtime.NumCPU()
+		if workers > total {
+			workers = total
+		}
+		results := make(chan int, workers)
+		var wg sync.WaitGroup
+		chunk := (total + workers - 1) / workers
+		for w := 0; w < workers; w++ {
+			start := w * chunk
+			end := start + chunk
+			if end > total {
+				end = total
 			}
+			if start >= end {
+				continue
+			}
+			wg.Add(1)
+			go func(s, e int) {
+				defer wg.Done()
+				local := 0
+				for i := s; i < e; i++ {
+					if board.Board[i] != final.Board[i] {
+						local++
+					}
+				}
+				results <- local
+			}(start, end)
+		}
+		wg.Wait()
+		close(results)
+		for v := range results {
+			result += v
 		}
 		return
 	}
