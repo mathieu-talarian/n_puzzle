@@ -3,10 +3,10 @@ package main
 import (
 	"crypto/rand"
 	"flag"
-	_ "net/http/pprof"
 	"log"
-	"net/http"
 	"math/big"
+	"net/http"
+	_ "net/http/pprof"
 )
 
 func main() {
@@ -68,7 +68,6 @@ func computeSolv(solvableFlag *bool, solv, unsolv bool) (err error) {
 }
 
 func ParseCommandLineFlags() (flags Flags, err error) {
-
 	var unsolv bool
 	var solv bool
 	flag.IntVar(&flags.Size, "size", 3, "Size of the puzzle's side. Must be > 3.")
